@@ -1,0 +1,151 @@
+# ============================================================
+# demografia-poblacion-inei :: .gitignore
+# Estrategia:
+# - VERSIONAR: código, config, specs, maestros, docs, raw público, catálogo
+# - IGNORAR: derivados pesados, staging, QC renderizado, objetos temporales
+# ============================================================
+
+# ============================================================
+# 1) R / RStudio
+# ============================================================
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+
+# renv (ajusta si luego decides versionar lockfile o activate)
+renv/library/
+renv/staging/
+renv/python/
+renv/cache/
+
+# Mantener lockfile si existe
+!renv.lock
+
+# ============================================================
+# 2) Sistema operativo / editores
+# ============================================================
+.DS_Store
+Thumbs.db
+desktop.ini
+*~
+*.swp
+*.swo
+
+# ============================================================
+# 3) Logs / temporales / backups
+# ============================================================
+*.log
+*.tmp
+*.temp
+*.bak
+*.old
+*.orig
+
+# ============================================================
+# 4) Renderizados pesados y salidas de documentos
+# ============================================================
+*_files/
+.quarto/
+*.html
+*.pdf
+*.docx
+*.doc
+*.pptx
+*.ppt
+*.pptm
+
+# Mantener QMD/MD
+!*.qmd
+!*.md
+!*.txt
+
+# ============================================================
+# 5) Datos derivados grandes o regenerables
+# ============================================================
+
+# Staging derivado
+data/derived/staging/**
+
+# QC derivado regenerable
+data/derived/qc/**
+
+# Finales derivados regenerables
+data/final/**
+
+# EXCEPCIÓN: si quieres conservar metadatos ligeros o snapshots puntuales, descomenta:
+#!data/derived/qc/**/*.csv
+#!data/final/**/*.csv
+
+# ============================================================
+# 6) Catálogo y provenance (SÍ versionar)
+# ============================================================
+!data/_catalog/
+!data/_catalog/catalogo_artefactos.csv
+!data/_catalog/provenance_runs.csv
+
+# ============================================================
+# 7) Raw público del proyecto (SÍ versionar)
+# ============================================================
+!data/raw/
+!data/raw/inei_population/
+!data/raw/inei_population/**
+
+# Si hubiera basura temporal dentro de raw, excluirla:
+data/raw/**/~$*
+data/raw/**/*.tmp
+data/raw/**/*.bak
+
+# ============================================================
+# 8) Configuración / specs / maestros (SÍ versionar)
+# ============================================================
+!config/
+!config/**/*.csv
+!config/**/*.yml
+!config/**/*.yaml
+!config/**/*.R
+
+# ============================================================
+# 9) Código fuente (SÍ versionar)
+# ============================================================
+!R/
+!R/**/*.R
+
+!scripts/
+!scripts/**/*.R
+
+# ============================================================
+# 10) Documentación raíz y estructura (SÍ versionar)
+# ============================================================
+!.gitignore
+!*.Rproj
+!README.qmd
+!README.md
+!LICENSE
+!tree_project.txt
+!arbol-estructura.R
+
+# ============================================================
+# 11) Tabulares genéricos fuera de carpetas permitidas
+# Regla conservadora: ignorar por defecto, salvo excepciones explícitas
+# ============================================================
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.ods
+*.json
+*.parquet
+*.feather
+*.rds
+*.rda
+*.RData
+
+# Excepciones ya permitidas arriba:
+!config/**/*.csv
+!config/**/*.yml
+!config/**/*.yaml
+!data/_catalog/**/*.csv
+!data/raw/inei_population/**
+!README.md
+!README.qmd

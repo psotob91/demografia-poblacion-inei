@@ -1,0 +1,14 @@
+ROOT: C:/Users/Usuario/OneDrive/Consultorias_Personales/Carga-CDC-Peru-2023/carga-enfermedad-peru-2018-2024/demografia-poblacion-inei
+└─ config
+└─ data
+  └─ raw
+    └─ inei_population
+└─ DATASET_SPEC_POPULATION_INEI_files
+└─ docs
+└─ outputs
+└─ R
+└─ README_files
+  └─ figure-html
+└─ reports
+  └─ qc
+└─ scripts

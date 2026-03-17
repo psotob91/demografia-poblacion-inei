@@ -1,0 +1,92 @@
+PROJECT ROOT: C:/Users/Usuario/OneDrive/Consultorias_Personales/Carga-CDC-Peru-2023/carga-enfermedad-peru-2018-2024/demografia-poblacion-inei
+
+└─ config/
+  └─ maestro_location_dept.csv
+  └─ maestro_location_hierarchical.csv
+  └─ maestro_sex_omop.csv
+  └─ parametros-proyecto.R
+  └─ spec_population_inei.yml
+  └─ spec_population_inei_hierarchical.yml
+└─ data/
+  └─ _catalog/
+    └─ catalogo_artefactos.csv
+    └─ provenance_runs.csv
+  └─ derived/
+    └─ qc/
+      └─ inei_population/
+        └─ hierarchical/
+          └─ qc_hierarchical_duplicates.csv
+          └─ qc_hierarchical_missing_required.csv
+          └─ qc_hierarchical_national_additive_check.csv
+          └─ qc_hierarchical_negative_population.csv
+          └─ qc_hierarchical_summary.csv
+    └─ staging/
+      └─ inei_population/
+        └─ download_log.csv
+        └─ omop_like_long.parquet
+        └─ parse_log.csv
+        └─ population_national_from_dept.parquet
+        └─ population_national_from_dept_diccionario_ext.csv
+        └─ raw_long.parquet
+  └─ final/
+    └─ population_inei/
+      └─ population_result.parquet
+      └─ population_result_hierarchical.parquet
+      └─ population_result_hierarchical_diccionario_ext.csv
+  └─ raw/
+    └─ inei_population/
+      └─ cap00.xlsx
+      └─ cap01.xlsx
+      └─ cap02.xlsx
+      └─ cap03.xlsx
+      └─ cap04.xlsx
+      └─ cap05.xlsx
+      └─ cap06.xlsx
+      └─ cap07.xlsx
+      └─ cap08.xlsx
+      └─ cap09.xlsx
+      └─ cap10.xlsx
+      └─ cap11.xlsx
+      └─ cap12.xlsx
+      └─ cap13.xlsx
+      └─ cap14.xlsx
+      └─ cap15.xlsx
+      └─ cap16.xlsx
+      └─ cap17.xlsx
+      └─ cap18.xlsx
+      └─ cap19.xlsx
+      └─ cap20.xlsx
+      └─ cap21.xlsx
+      └─ cap22.xlsx
+      └─ cap23.xlsx
+      └─ cap24.xlsx
+      └─ cap25.xlsx
+└─ demografia-poblacion-inei.Rproj
+└─ docs
+└─ outputs/
+  └─ dir_audit/
+    └─ dir_summary.csv
+    └─ ext_summary.csv
+    └─ files.csv
+    └─ tree.txt
+└─ R/
+  └─ catalog_utils.R
+  └─ dictionary_utils.R
+  └─ io_utils.R
+  └─ qc_utils.R
+  └─ registrar_dataset.R
+  └─ spec_utils.R
+└─ README.md
+└─ renv.lock
+└─ reports
+└─ scripts/
+  └─ 00_setup_packages.R
+  └─ 01_ingesta_raw_inei.R
+  └─ 02-03-poblacion-proyectada-inei-peru-extrapolacion80-110.qmd
+  └─ 02_normaliza_long_omop.R
+  └─ 03_extrapola_80_110.R
+  └─ 04_build_national_from_dept.R
+  └─ 05_build_population_view_hierarchical.R
+  └─ 99_qc_global.R
+  └─ 99_qc_global_hierarchical.R
+└─ tree_project.txt

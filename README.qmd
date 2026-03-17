@@ -1,0 +1,142 @@
+---
+title: "demografia-poblacion-inei"
+format:
+  gfm:
+    output-file: README.md
+author: "Percy Soto Becerra"
+---
+
+# demografia-poblacion-inei
+
+Pipeline reproducible en **R** para construir un dataset canónico de **población por edad simple, sexo y departamento** a partir de proyecciones públicas del **INEI**, con una salida analítica en formato **OMOP-like / results-like**, control de calidad automatizado y trazabilidad completa de artefactos.
+
+## Abstract
+
+Este repositorio implementa un flujo reproducible para transformar insumos públicos del Instituto Nacional de Estadística e Informática del Perú (INEI) en un dataset canónico de conteos poblacionales. El pipeline estandariza archivos fuente por departamento, armoniza sexo y ubicación con maestros explícitos, genera una tabla final por **año calendario**, **edad simple (0–110)**, **sexo** y **location_id**, y produce una vista jerárquica adicional donde el nacional es una **suma exacta de departamentos**. El repositorio incorpora validación estructural contra especificaciones YAML, controles detectivos de duplicados, faltantes, no negatividad, monotonicidad de cola y consistencia nacional-versus-departamentos, además de un catálogo de artefactos con `run_id`, hash y metadatos de corrida.
+
+## Research-purpose contribution
+
+Este proyecto busca que la población usada downstream en pipelines de mortalidad, AVP, morbilidad y carga de enfermedad:
+
+- sea **reproducible**;
+- tenga un **contrato de datos explícito**;
+- preserve la **procedencia pública** de los insumos;
+- y reduzca errores silenciosos en procesos posteriores de agregación nacional y subnacional.
+
+## Repository structure
+
+```text
+R/                         utilidades internas del pipeline
+scripts/                   scripts secuenciales de construcción y QC
+config/                    maestros, especificaciones YAML y parámetros
+data/raw/                  insumos públicos originales de INEI
+data/derived/staging/      staging y logs intermedios
+data/derived/qc/           outputs de control de calidad
+data/final/                datasets finales y diccionarios
+data/_catalog/             catálogos de artefactos y provenance
+```
+
+## Core outputs
+
+### 1) Dataset canónico
+
+Archivo principal esperado:
+
+- `data/final/population_inei/population_result.parquet`
+
+Llave primaria lógica:
+
+- `(year_id, age, sex_id, location_id)`
+
+Columnas requeridas:
+
+- `year_id`
+- `age`
+- `sex_id`
+- `location_id`
+- `population`
+
+### 2) Diccionario extendido
+
+- `data/final/population_inei/population_result_diccionario_ext.csv`
+
+### 3) Vista jerárquica downstream
+
+- `data/final/population_inei/population_result_hierarchical.parquet`
+- `data/final/population_inei/population_result_hierarchical_diccionario_ext.csv`
+
+En esta vista:
+
+- se excluye `location_id = 0`;
+- se agrega `location_id = 9000` como nacional aditivo;
+- y el nacional debe ser igual a la suma exacta de los departamentos base.
+
+## Reproducibility contract
+
+Este repositorio debe preservar, como mínimo:
+
+1. **Código fuente** de `R/` y `scripts/`.
+2. **Especificaciones YAML** de `config/`.
+3. **Maestros de mapeo** de sexo y ubicación.
+4. **Parámetros de proyecto** usados por las corridas.
+5. **Data pública raw** de INEI en `data/raw/inei_population/`.
+6. **Catálogo de artefactos** y `provenance_runs` para auditoría.
+7. **Documentación técnica** suficiente para reconstruir el pipeline extremo a extremo.
+
+## Public data provenance
+
+Los archivos raw se descargan desde publicaciones digitales del INEI y deben mantenerse con su nombre original, junto con documentación mínima sobre:
+
+- fuente institucional;
+- URL base o referencia de descarga;
+- fecha de acceso;
+- cobertura temporal;
+- y cualquier convención usada para mapear hojas, sexo o ubicación.
+
+## Execution order
+
+```r
+source("scripts/01_ingesta_raw_inei.R")
+source("scripts/02_normaliza_long_omop.R")
+source("scripts/03_extrapola_80_110.R")
+source("scripts/04_build_national_from_dept.R")
+source("scripts/05_build_population_view_hierarchical.R")
+source("scripts/99_qc_global.R")
+source("scripts/99_qc_global_hierarchical.R")
+```
+
+## Quality control
+
+El pipeline implementa, entre otros, los siguientes chequeos:
+
+- columnas obligatorias y tipos esperados;
+- duplicados en PK lógica;
+- población negativa;
+- monotonicidad de la cola etaria en edades altas;
+- comparación entre nacional oficial y suma de departamentos;
+- verificación estricta del nacional aditivo `9000` en la vista jerárquica.
+
+## Dependencies
+
+Paquetes principales de R usados en el repositorio:
+
+- `data.table`
+- `arrow`
+- `yaml`
+- `here`
+- `readxl`
+- `janitor`
+- `stringr`
+- `tidyr`
+- `dplyr`
+- `purrr`
+- `splines`
+- `digest`
+
+## Recommended citation
+
+Si este repositorio contribuye a un análisis o producto downstream, citar el repositorio junto con la fuente pública original del INEI y la versión exacta del run o commit utilizado.
+
+## License
+
+Este repositorio mantiene el archivo `LICENSE` versionado en GitHub. Revisar ese archivo para los términos de uso.
