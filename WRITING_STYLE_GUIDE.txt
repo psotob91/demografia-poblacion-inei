@@ -1,0 +1,43 @@
+GUÍA DE ESTILO DE REDACCIÓN
+
+OBJETIVO:
+
+Redactar un documento claro, didáctico y útil para tomadores de decisiones en salud pública.
+
+---
+
+PRINCIPIOS:
+
+1. Claridad sobre complejidad
+2. Explicación conceptual antes que técnica
+3. Justificación explícita de decisiones
+4. Transparencia metodológica
+
+---
+
+ESTILO:
+
+- Similar a OMS / informes técnicos
+- Párrafos explicativos (no solo listas)
+- Lenguaje accesible pero riguroso
+
+---
+
+EJEMPLO DE TONO:
+
+"Para estimar los años de vida perdidos (AVP), se multiplicó el número de muertes por la esperanza de vida estándar a la edad de defunción. Este enfoque permite cuantificar la pérdida de años potenciales de vida atribuible a cada causa."
+
+---
+
+INCLUIR SIEMPRE:
+
+- Qué significa el método
+- Por qué se usa
+- Qué implicaciones tiene
+
+---
+
+EVITAR:
+
+- lenguaje excesivamente matemático sin explicación
+- jerga innecesaria

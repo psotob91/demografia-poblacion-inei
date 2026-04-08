@@ -1,0 +1,34 @@
+DOCUMENTOS A SUBIR (NO GITHUB)
+
+OBLIGATORIOS:
+
+- WHO GHE methods
+- ABDS (Australia) methods
+- Protocolo del estudio
+
+---
+
+ALTAMENTE RECOMENDADOS:
+
+- Papers previos del equipo
+- Documentos internos:
+  - decisiones metodológicas
+  - notas técnicas
+  - justificaciones
+
+---
+
+OBJETIVO:
+
+Estos documentos se usarán para:
+
+- contextualizar métodos
+- comparar enfoques
+- justificar adaptaciones
+
+---
+
+NO SUBIR:
+
+- scripts
+- bases de datos grandes

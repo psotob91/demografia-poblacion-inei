@@ -1,0 +1,22 @@
+REPOSITORIOS A ANALIZAR
+
+1. Tablas de Mortalidad:
+https://github.com/psotob91/tabla-mortalidad-peru
+
+2. Tabla de vida estandar de referencia:
+https://github.com/psotob91/tabla-vida-estandar
+
+3. Población INEI:
+https://github.com/psotob91/demografia-poblacion-inei
+
+4. Estimacion de mortalidad y AVP por causas de muerte:
+https://github.com/psotob91/mortalidad-causa-especifica
+
+---
+
+INSTRUCCIONES:
+
+- Analizar pipeline completo
+- Identificar decisiones metodológicas reales
+- No asumir nada fuera del código
+- Traducir procesos técnicos a lenguaje metodológico
