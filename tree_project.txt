@@ -63,6 +63,15 @@ PROJECT ROOT: C:/Users/Usuario/OneDrive/Consultorias_Personales/Carga-CDC-Peru-2
       └─ cap25.xlsx
 └─ demografia-poblacion-inei.Rproj
 └─ docs
+└─ LICENSE
+└─ masters/
+  └─ 00_MASTER_SCOPE.txt
+  └─ 01_MASTER_SYLE_GUIDE.txt
+  └─ 02_MASTER_TERMINOLOGIA.txt
+  └─ 03_MASTER_DECISIONES_METODOLOGICAS.txt
+  └─ 04_MASTER_GLOSARIO_OUTPUTS.txt
+  └─ 05_MASTER_DIFERENCIAS_PROTOCOLO_VS_CODIGO.txt
+  └─ 06_MASTER_MEJORAS_Y_HALLAZGOS.txt
 └─ outputs/
   └─ dir_audit/
     └─ dir_summary.csv
@@ -77,6 +86,7 @@ PROJECT ROOT: C:/Users/Usuario/OneDrive/Consultorias_Personales/Carga-CDC-Peru-2
   └─ registrar_dataset.R
   └─ spec_utils.R
 └─ README.md
+└─ README.qmd
 └─ renv.lock
 └─ reports
 └─ scripts/

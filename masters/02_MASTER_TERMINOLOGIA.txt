@@ -1,0 +1,13 @@
+# Terminología preferida
+- dataset canónico
+- staging raw_long
+- staging OMOP-like
+- extrapolación de edades altas
+- nacional oficial (location_id=0)
+- nacional aditivo (location_id=9000)
+- vista jerárquica consistente
+- QC duro
+- QC detectivo
+- contrato de datos
+- spec YAML
+- catálogo de artefactos
