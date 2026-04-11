@@ -80,4 +80,4 @@ Treat these as normative unless evidence shows otherwise:
 - `data/final/`
 - `data/_catalog/`
 
-Treat legacy narrative files under `docs/archive/masters_legacy/` as contextual, not normative.
+Treat legacy narrative files under `docs/archive/masters_legacy/` or older notes as contextual, not normative.
