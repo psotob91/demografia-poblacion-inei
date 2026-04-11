@@ -59,6 +59,23 @@ Propuesta futura:
 Prioridad:
 Alta (para siguiente versión)
 
+### [M-002] Falta de justificación explícita del rango de ajuste 70–79
+
+Tipo: metodológica.
+
+El código implementa el rango, pero no documenta por qué ese tramo fue elegido.
+
+### [M-003] Falta de explicitación del sentido epidemiológico de la monotonicidad 70+
+Tipo: metodológica.
+
+La restricción existe, pero no se argumenta su racionalidad ni sus implicancias.
+
+### [M-004] La coherencia evaluada es estructural/arimética, no demográfica integral
+
+Tipo: metodológica.
+
+Conviene evitar sobreinterpretación del QC.
+
 ---
 
 ## 3. Decisiones de diseño
@@ -77,6 +94,12 @@ Difiere del nacional oficial INEI (00)
 Recomendación:
 - Mantener ambos explícitamente documentados
 - Evaluar cuál usar en downstream (GBD vs policy)
+
+### [D-002] Coexistencia de dos definiciones nacionales requiere guía de uso analítico
+
+Tipo: estructural/metodológica.
+
+Debe aclararse cuándo usar 0 y cuándo 9000.
 
 ---
 
@@ -102,6 +125,12 @@ No existe documento formal del modelo de datos
 
 Propuesta:
 - Crear DATA_MODEL.md (fase Codex)
+
+### [S-003] Falta una sección formal de supuestos del método en la documentación
+
+Tipo: estructural.
+
+Los supuestos existen de facto, pero no están consolidados.
 
 ---
 
