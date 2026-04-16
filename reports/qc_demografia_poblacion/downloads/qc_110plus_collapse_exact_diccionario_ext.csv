@@ -1,0 +1,10 @@
+dataset_id,version,run_id,table_name,column_name,label,description,data_type,units,allow_na,is_key,n_missing,pct_missing,observed_min,observed_max,example_values
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_110plus_collapse_exact,year_id,year_id,year_id,integer,,FALSE,TRUE,0,0,1995,2030,1995|1996|1997|1998|1999
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_110plus_collapse_exact,sex_id,sex_id,sex_id,integer,,FALSE,TRUE,0,0,8507,8532,8507|8532
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_110plus_collapse_exact,location_id,location_id,location_id,integer,,FALSE,TRUE,0,0,0,25,0|1|2|3|4
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_110plus_collapse_exact,pop_110plus_final,Poblacion 110+ final,"Conteo contractual publicado en age=110, interpretado como 110+.",integer,,FALSE,FALSE,0,0,0,136,0|1|2|3|4
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_110plus_collapse_exact,pop_bridge_110plus,Poblacion puente 110+,Valor entero del puente contractual 110+ despues del redondeo Hamilton.,integer,,FALSE,FALSE,0,0,0,136,0|1|2|3|4
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_110plus_collapse_exact,mass_adjustment_from_crossrepo_qc,mass_adjustment_from_crossrepo_qc,mass_adjustment_from_crossrepo_qc,integer,,FALSE,FALSE,0,0,0,0,0
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_110plus_collapse_exact,pop_bridge_expected_110plus,pop_bridge_expected_110plus,pop_bridge_expected_110plus,integer,,FALSE,FALSE,0,0,0,136,0|1|2|3|4
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_110plus_collapse_exact,diff,Delta,Diferencia entre el contractual 110+ y el puente contractual 110+.,integer,,FALSE,FALSE,0,0,0,0,0
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_110plus_collapse_exact,flag_diff,Flag de diferencia,TRUE si el colapso 110+ no es exacto o falta cobertura.,logical,,FALSE,FALSE,0,0,,,FALSE

@@ -1,5 +1,5 @@
----
-title: "Reporte metodológico de procesamiento y corrección de población total por edad simple, sexo y región del INEI"
+﻿---
+title: "Reporte metodolÃ³gico de procesamiento y correcciÃ³n de poblaciÃ³n total por edad simple, sexo y regiÃ³n del INEI"
 format: 
   html: 
     theme: journal
@@ -9,56 +9,67 @@ format:
     number-sections: true
 ---
 
-## Introducción
+## Nota operativa: coherencia cruzada 110+ con mortalidad
 
-En los estudios de carga de enfermedad, la población es un insumo fundamental para el cálculo de indicadores. Permite expresar eventos de salud en relación con el tamaño y la estructura de la población, y constituye el denominador para el cálculo de tasas como incidencia, prevalencia y mortalidad.
+Ademas del metodo principal de cola demografica, este repositorio puede aplicar una salvaguarda contractual minima basada en un snapshot agregado y no sensible producido por `mortalidad-causa-especifica`. El snapshot resume muertes observadas `age >= 110` por `year_id`, `sex_id` y `location_id`.
 
-Su importancia no se limita al cálculo de tasas. En el caso de los Años de Vida Perdidos (AVP), las muertes utilizadas en el análisis no corresponden directamente a los conteos observados, sino a estimaciones corregidas. Este proceso de corrección se realiza a través de tasas, que luego deben reconvertirse a número de muertes. En esta etapa, el denominador poblacional es clave, ya que permite transformar las tasas corregidas en conteos de muertes esperadas por edad, sexo, ubicación y año.
+La regla es intencionalmente estrecha:
 
-Dado que los AVP requieren asignar las muertes a edades específicas y aplicar tablas de vida, es necesario disponer de una distribución poblacional por edad simple. El uso de grupos etarios amplios no permite realizar esta asignación con la precisión requerida. En contraste, para los Años Vividos con Discapacidad (AVD) es posible trabajar con grupos de edad, aunque la disponibilidad de edad simple ofrece mayor flexibilidad analítica.
+- si no existe snapshot valido, el pipeline corre sin esta capa y deja evidencia `skipped_no_snapshot`;
+- si existe snapshot valido y reporta al menos una muerte observada `110+` en un estrato donde la poblacion contractual `110+` habria quedado en `0`, el contractual eleva `age = 110` a `1`;
+- el ajuste se registra como `coherence_floor_applied` y `mass_adjustment_from_crossrepo_qc`;
+- la regla no recalibra la cola interna `110:125` ni modifica edades `0:109`.
 
-Para cumplir estas funciones, es necesario contar con una base poblacional completa, coherente y estructurada de manera uniforme. En el caso del Perú, las estimaciones del Instituto Nacional de Estadística e Informática (INEI) se encuentran disponibles en archivos en formato Excel, organizados para fines de difusión. Esta forma de presentación dificulta su integración directa en una base de datos analítica, debido a variaciones en formatos, encabezados y disposición de las variables.
+## IntroducciÃ³n
 
-Adicionalmente, existe una limitación metodológica relevante en la distribución por edad. Las estimaciones del INEI presentan población por edad simple solo hasta un cierto límite en edades avanzadas, a partir del cual la información se agrupa en categorías abiertas. Esto impide disponer de conteos específicos para cada edad en la cola de la distribución, lo cual es necesario para el cálculo de AVP.
+En los estudios de carga de enfermedad, la poblaciÃ³n es un insumo fundamental para el cÃ¡lculo de indicadores. Permite expresar eventos de salud en relaciÃ³n con el tamaÃ±o y la estructura de la poblaciÃ³n, y constituye el denominador para el cÃ¡lculo de tasas como incidencia, prevalencia y mortalidad.
 
-En este contexto, el componente demográfico tiene como propósito construir una base poblacional utilizable para el análisis de carga de enfermedad. La información utilizada proviene de estimaciones oficiales del INEI, las cuales son transformadas a una estructura uniforme por edad, sexo, ubicación y año.
+Su importancia no se limita al cÃ¡lculo de tasas. En el caso de los AÃ±os de Vida Perdidos (AVP), las muertes utilizadas en el anÃ¡lisis no corresponden directamente a los conteos observados, sino a estimaciones corregidas. Este proceso de correcciÃ³n se realiza a travÃ©s de tasas, que luego deben reconvertirse a nÃºmero de muertes. En esta etapa, el denominador poblacional es clave, ya que permite transformar las tasas corregidas en conteos de muertes esperadas por edad, sexo, ubicaciÃ³n y aÃ±o.
 
-Como parte de este proceso, se realiza una armonización de los datos para integrarlos en una base consistente. Asimismo, se extiende la distribución etaria hasta un límite superior definido, con el fin de cubrir todas las edades necesarias para el análisis.
+Dado que los AVP requieren asignar las muertes a edades especÃ­ficas y aplicar tablas de vida, es necesario disponer de una distribuciÃ³n poblacional por edad simple. El uso de grupos etarios amplios no permite realizar esta asignaciÃ³n con la precisiÃ³n requerida. En contraste, para los AÃ±os Vividos con Discapacidad (AVD) es posible trabajar con grupos de edad, aunque la disponibilidad de edad simple ofrece mayor flexibilidad analÃ­tica.
 
-Este componente no genera nuevas proyecciones demográficas ni modifica los supuestos de la fuente original. Su función es adaptar la información disponible para asegurar comparabilidad entre estratos y coherencia en su uso como denominador en el cálculo de indicadores.
+Para cumplir estas funciones, es necesario contar con una base poblacional completa, coherente y estructurada de manera uniforme. En el caso del PerÃº, las estimaciones del Instituto Nacional de EstadÃ­stica e InformÃ¡tica (INEI) se encuentran disponibles en archivos en formato Excel, organizados para fines de difusiÃ³n. Esta forma de presentaciÃ³n dificulta su integraciÃ³n directa en una base de datos analÃ­tica, debido a variaciones en formatos, encabezados y disposiciÃ³n de las variables.
 
-En conjunto, la población estimada debe entenderse como un insumo analítico que permite integrar y comparar resultados dentro del estudio de carga de enfermedad, manteniendo consistencia en la definición de la población utilizada.
+Adicionalmente, existe una limitaciÃ³n metodolÃ³gica relevante en la distribuciÃ³n por edad. Las estimaciones del INEI presentan poblaciÃ³n por edad simple solo hasta un cierto lÃ­mite en edades avanzadas, a partir del cual la informaciÃ³n se agrupa en categorÃ­as abiertas. Esto impide disponer de conteos especÃ­ficos para cada edad en la cola de la distribuciÃ³n, lo cual es necesario para el cÃ¡lculo de AVP.
+
+En este contexto, el componente demogrÃ¡fico tiene como propÃ³sito construir una base poblacional utilizable para el anÃ¡lisis de carga de enfermedad. La informaciÃ³n utilizada proviene de estimaciones oficiales del INEI, las cuales son transformadas a una estructura uniforme por edad, sexo, ubicaciÃ³n y aÃ±o.
+
+Como parte de este proceso, se realiza una armonizaciÃ³n de los datos para integrarlos en una base consistente. Asimismo, se extiende la distribuciÃ³n etaria hasta un lÃ­mite superior definido, con el fin de cubrir todas las edades necesarias para el anÃ¡lisis.
+
+Este componente no genera nuevas proyecciones demogrÃ¡ficas ni modifica los supuestos de la fuente original. Su funciÃ³n es adaptar la informaciÃ³n disponible para asegurar comparabilidad entre estratos y coherencia en su uso como denominador en el cÃ¡lculo de indicadores.
+
+En conjunto, la poblaciÃ³n estimada debe entenderse como un insumo analÃ­tico que permite integrar y comparar resultados dentro del estudio de carga de enfermedad, manteniendo consistencia en la definiciÃ³n de la poblaciÃ³n utilizada.
 
 ## 1. Marco conceptual
 
-En los estudios de carga de enfermedad, la población se define como el número de personas en una unidad demográfica específica, desagregada por edad, sexo, ubicación y año calendario. Esta definición establece la base común sobre la cual se calculan y comparan los indicadores.
+En los estudios de carga de enfermedad, la poblaciÃ³n se define como el nÃºmero de personas en una unidad demogrÃ¡fica especÃ­fica, desagregada por edad, sexo, ubicaciÃ³n y aÃ±o calendario. Esta definiciÃ³n establece la base comÃºn sobre la cual se calculan y comparan los indicadores.
 
-Desde el punto de vista epidemiológico, la población actúa como denominador en el cálculo de tasas. Si $D_{a,s,l,t}$ representa el número de muertes y $P_{a,s,l,t}$ la población del mismo estrato, la tasa de mortalidad puede expresarse como:
+Desde el punto de vista epidemiolÃ³gico, la poblaciÃ³n actÃºa como denominador en el cÃ¡lculo de tasas. Si $D_{a,s,l,t}$ representa el nÃºmero de muertes y $P_{a,s,l,t}$ la poblaciÃ³n del mismo estrato, la tasa de mortalidad puede expresarse como:
 
 $$
 r_{a,s,l,t} = \frac{D_{a,s,l,t}}{P_{a,s,l,t}}
 $$
 
-donde $a$ representa la edad, $s$ el sexo, $l$ la ubicación y $t$ el año. Esta relación permite expresar la frecuencia de muertes en función del tamaño poblacional de cada estrato.
+donde $a$ representa la edad, $s$ el sexo, $l$ la ubicaciÃ³n y $t$ el aÃ±o. Esta relaciÃ³n permite expresar la frecuencia de muertes en funciÃ³n del tamaÃ±o poblacional de cada estrato.
 
-En este estudio, la tasa no solo cumple una función descriptiva. También constituye un paso intermedio en el proceso de corrección de mortalidad. Las muertes observadas se convierten primero en tasas observadas. Sobre esas tasas se aplican los procedimientos de corrección. Luego, las tasas corregidas se reconvierten a número de muertes esperadas mediante el mismo denominador poblacional. 
+En este estudio, la tasa no solo cumple una funciÃ³n descriptiva. TambiÃ©n constituye un paso intermedio en el proceso de correcciÃ³n de mortalidad. Las muertes observadas se convierten primero en tasas observadas. Sobre esas tasas se aplican los procedimientos de correcciÃ³n. Luego, las tasas corregidas se reconvierten a nÃºmero de muertes esperadas mediante el mismo denominador poblacional. 
 
-En términos simples, la tasa de mortalidad que observamos con los datos sin corregir se define:
+En tÃ©rminos simples, la tasa de mortalidad que observamos con los datos sin corregir se define:
 
 $$
 r^{obs}_{a,s,l,t} = \frac{D^{obs}_{a,s,l,t}}{P_{a,s,l,t}}
 $$
 
-Y luego del proceso de corrección, se cumple que el número de muertes corregidas se deriva de:
+Y luego del proceso de correcciÃ³n, se cumple que el nÃºmero de muertes corregidas se deriva de:
 
 $$
 D^{corr}_{a,s,l,t} = r^{corr}_{a,s,l,t} \times P_{a,s,l,t}
 $$
-Esto muestra que la población interviene en dos momentos del proceso (@fig-rate-flow). Primero, permite transformar las muertes observadas en tasas observadas. Segundo, permite transformar las tasas corregidas en muertes corregidas. Por ello, la calidad y la coherencia del denominador poblacional son determinantes para la validez de las estimaciones finales.
+Esto muestra que la poblaciÃ³n interviene en dos momentos del proceso (@fig-rate-flow). Primero, permite transformar las muertes observadas en tasas observadas. Segundo, permite transformar las tasas corregidas en muertes corregidas. Por ello, la calidad y la coherencia del denominador poblacional son determinantes para la validez de las estimaciones finales.
 
 ```{mermaid}
 %%| label: fig-rate-flow
-%%| fig-cap: Flujo conceptual de transformación de muertes observadas a muertes corregidas y papel del denominador poblacional
+%%| fig-cap: Flujo conceptual de transformaciÃ³n de muertes observadas a muertes corregidas y papel del denominador poblacional
 flowchart LR
 
   %% Nodos observados
@@ -66,18 +77,18 @@ flowchart LR
   B["Tasas observadas<br/>D_obs / P"]:::observed
 
   %% Proceso
-  C{{"Proceso de corrección<br/>(redistribución, ajuste)"}}:::process
+  C{{"Proceso de correcciÃ³n<br/>(redistribuciÃ³n, ajuste)"}}:::process
 
   %% Nodos corregidos
   D["Tasas corregidas<br/>r_corr"]:::corrected
-  E(("Muertes corregidas<br/>r_corr × P")):::corrected
+  E(("Muertes corregidas<br/>r_corr Ã— P")):::corrected
 
   %% Resultado final
-  F["Cálculo de AVP<br/>(edad simple)"]:::final
+  F["CÃ¡lculo de AVP<br/>(edad simple)"]:::final
 
-  %% Población (denominador)
-  P1[/"Población (P)"/]:::population
-  P2[/"Población (P)"/]:::population
+  %% PoblaciÃ³n (denominador)
+  P1[/"PoblaciÃ³n (P)"/]:::population
+  P2[/"PoblaciÃ³n (P)"/]:::population
 
   %% Flujo
   A --> B
@@ -97,118 +108,118 @@ flowchart LR
 ```
 
 
-Esta lógica es especialmente importante en el cálculo de los Años de Vida Perdidos. Los AVP se estiman a partir de muertes corregidas asignadas a edades específicas, y no solo a partir de conteos brutos observados. Por esta razón, se requiere una distribución poblacional por edad simple que permita trabajar con precisión en cada edad. El uso exclusivo de grupos etarios amplios no sería suficiente para este propósito.
+Esta lÃ³gica es especialmente importante en el cÃ¡lculo de los AÃ±os de Vida Perdidos. Los AVP se estiman a partir de muertes corregidas asignadas a edades especÃ­ficas, y no solo a partir de conteos brutos observados. Por esta razÃ³n, se requiere una distribuciÃ³n poblacional por edad simple que permita trabajar con precisiÃ³n en cada edad. El uso exclusivo de grupos etarios amplios no serÃ­a suficiente para este propÃ³sito.
 
-En los Años Vividos con Discapacidad, en cambio, es posible trabajar con grupos de edad en varios pasos del análisis. Sin embargo, disponer de población por edad simple sigue siendo ventajoso, porque facilita la agregación flexible y mejora la compatibilidad entre componentes del estudio.
+En los AÃ±os Vividos con Discapacidad, en cambio, es posible trabajar con grupos de edad en varios pasos del anÃ¡lisis. Sin embargo, disponer de poblaciÃ³n por edad simple sigue siendo ventajoso, porque facilita la agregaciÃ³n flexible y mejora la compatibilidad entre componentes del estudio.
 
-Para que este proceso sea válido, la población y los eventos deben compartir la misma estructura de desagregación. Esto exige una base uniforme por edad, sexo, ubicación y año. Como las fuentes originales no siempre presentan la información en esta estructura, el componente demográfico realiza una adaptación que permite su uso directo en el análisis.
+Para que este proceso sea vÃ¡lido, la poblaciÃ³n y los eventos deben compartir la misma estructura de desagregaciÃ³n. Esto exige una base uniforme por edad, sexo, ubicaciÃ³n y aÃ±o. Como las fuentes originales no siempre presentan la informaciÃ³n en esta estructura, el componente demogrÃ¡fico realiza una adaptaciÃ³n que permite su uso directo en el anÃ¡lisis.
 
 ## 2. Fuentes de datos
 
-Las estimaciones poblacionales utilizadas en este componente se basan en información oficial producida por el Instituto Nacional de Estadística e Informática. Los datos fueron descargados desde el portal oficial del INEI en el siguiente enlace específico del producto: https://www.gob.pe/institucion/inei/informes-publicaciones/6855196-peru-estimaciones-y-proyecciones-de-poblacion-departamental-por-anos-calendario-y-edad-simple-1995-2030. Con fines de reproducibilidad y preservación de la información, se mantiene una copia espejo versionada de estos datos en el repositorio de GitHub del proyecto: https://github.com/psotob91/demografia-poblacion-inei. Esta copia permite asegurar la trazabilidad y disponibilidad del insumo en caso de actualizaciones, modificaciones o retiro de los archivos en la fuente original. El insumo operativo directo corresponde al boletín *Perú: Estimaciones y Proyecciones de Población Departamental por Años Calendario y Edad Simple, 1995-2030*, publicado en enero de 2020. Este documento presenta población por sexo, departamento, edad simple y año calendario, pero no constituye una proyección demográfica independiente construida íntegramente a ese nivel de resolución. El propio boletín señala que fue elaborado a partir del *Boletín de Análisis Demográfico N.° 39: Perú: Estimaciones y Proyecciones de la Población Total por departamento, 1995-2030*, que contiene las proyecciones departamentales por sexo y grupos quinquenales de edad. A su vez, el Boletín N.° 39 declara que tomó como base el *Boletín de Análisis Demográfico N.° 38: Perú: Estimaciones y Proyecciones de la Población Nacional, 1950-2070*. En consecuencia, la fuente oficial debe entenderse como una cadena de producción en tres niveles: proyección nacional, proyección departamental quinquenal y desagregación posterior a edad simple y año calendario [INEI, 2019a; INEI, 2020].
+Las estimaciones poblacionales utilizadas en este componente se basan en informaciÃ³n oficial producida por el Instituto Nacional de EstadÃ­stica e InformÃ¡tica. Los datos fueron descargados desde el portal oficial del INEI en el siguiente enlace especÃ­fico del producto: https://www.gob.pe/institucion/inei/informes-publicaciones/6855196-peru-estimaciones-y-proyecciones-de-poblacion-departamental-por-anos-calendario-y-edad-simple-1995-2030. Con fines de reproducibilidad y preservaciÃ³n de la informaciÃ³n, se mantiene una copia espejo versionada de estos datos en el repositorio de GitHub del proyecto: https://github.com/psotob91/demografia-poblacion-inei. Esta copia permite asegurar la trazabilidad y disponibilidad del insumo en caso de actualizaciones, modificaciones o retiro de los archivos en la fuente original. El insumo operativo directo corresponde al boletÃ­n *PerÃº: Estimaciones y Proyecciones de PoblaciÃ³n Departamental por AÃ±os Calendario y Edad Simple, 1995-2030*, publicado en enero de 2020. Este documento presenta poblaciÃ³n por sexo, departamento, edad simple y aÃ±o calendario, pero no constituye una proyecciÃ³n demogrÃ¡fica independiente construida Ã­ntegramente a ese nivel de resoluciÃ³n. El propio boletÃ­n seÃ±ala que fue elaborado a partir del *BoletÃ­n de AnÃ¡lisis DemogrÃ¡fico N.Â° 39: PerÃº: Estimaciones y Proyecciones de la PoblaciÃ³n Total por departamento, 1995-2030*, que contiene las proyecciones departamentales por sexo y grupos quinquenales de edad. A su vez, el BoletÃ­n N.Â° 39 declara que tomÃ³ como base el *BoletÃ­n de AnÃ¡lisis DemogrÃ¡fico N.Â° 38: PerÃº: Estimaciones y Proyecciones de la PoblaciÃ³n Nacional, 1950-2070*. En consecuencia, la fuente oficial debe entenderse como una cadena de producciÃ³n en tres niveles: proyecciÃ³n nacional, proyecciÃ³n departamental quinquenal y desagregaciÃ³n posterior a edad simple y aÃ±o calendario [INEI, 2019a; INEI, 2020].
 
-El Boletín N.° 39 sí permite reconstruir con bastante precisión la arquitectura metodológica del INEI. En su presentación, el documento establece que las nuevas proyecciones se actualizaron luego de los Censos Nacionales de 2017 y que, junto con ese censo, se utilizaron encuestas especializadas y registros administrativos para medir la dinámica demográfica departamental. En el desarrollo metodológico se especifica luego que las estimaciones de mortalidad utilizaron los censos de 1993, 2007 y 2017, las ENDES 1996, 2000 y 2009 a 2018, y las estadísticas vitales de defunciones centradas en 1993, 2007 y 2015. Para fecundidad se emplearon el censo de 2017, las ENDES 1996-2000 y 2009-2018, las estadísticas vitales de nacimientos de 1992-2016 y el método de Hijos Propios aplicado a los censos de 1993, 2007 y 2017. Para migración interna se usaron los censos nacionales, y para migración internacional la información de la Superintendencia Nacional de Migraciones sobre entradas y salidas de peruanos al exterior que no retornaron en el plazo de un año, además de información sobre extranjeros residentes. El documento también menciona datos de RENIEC para 2017 como parte de las fuentes utilizadas en la reconstrucción demográfica reciente [INEI, 2019a].
+El BoletÃ­n N.Â° 39 sÃ­ permite reconstruir con bastante precisiÃ³n la arquitectura metodolÃ³gica del INEI. En su presentaciÃ³n, el documento establece que las nuevas proyecciones se actualizaron luego de los Censos Nacionales de 2017 y que, junto con ese censo, se utilizaron encuestas especializadas y registros administrativos para medir la dinÃ¡mica demogrÃ¡fica departamental. En el desarrollo metodolÃ³gico se especifica luego que las estimaciones de mortalidad utilizaron los censos de 1993, 2007 y 2017, las ENDES 1996, 2000 y 2009 a 2018, y las estadÃ­sticas vitales de defunciones centradas en 1993, 2007 y 2015. Para fecundidad se emplearon el censo de 2017, las ENDES 1996-2000 y 2009-2018, las estadÃ­sticas vitales de nacimientos de 1992-2016 y el mÃ©todo de Hijos Propios aplicado a los censos de 1993, 2007 y 2017. Para migraciÃ³n interna se usaron los censos nacionales, y para migraciÃ³n internacional la informaciÃ³n de la Superintendencia Nacional de Migraciones sobre entradas y salidas de peruanos al exterior que no retornaron en el plazo de un aÃ±o, ademÃ¡s de informaciÃ³n sobre extranjeros residentes. El documento tambiÃ©n menciona datos de RENIEC para 2017 como parte de las fuentes utilizadas en la reconstrucciÃ³n demogrÃ¡fica reciente [INEI, 2019a].
 
-La proyección departamental se elaboró mediante el método de los componentes. Es decir, para cada uno de los 24 departamentos y para la Provincia Constitucional del Callao, el cambio poblacional se modeló a partir de la población base, los nacimientos, las defunciones y el saldo migratorio. Este punto es importante porque muestra que la población departamental publicada por el INEI no es una simple repartición proporcional del total nacional, sino el resultado de una proyección subnacional con comportamiento demográfico propio. Sin embargo, el mismo boletín reconoce que, al proyectar independientemente las áreas mayores, la suma de los departamentos no coincide exactamente con la proyección nacional oficial. Por ello, el INEI introdujo un ajuste posterior para armonizar las proyecciones departamentales con la proyección nacional [INEI, 2019a].
+La proyecciÃ³n departamental se elaborÃ³ mediante el mÃ©todo de los componentes. Es decir, para cada uno de los 24 departamentos y para la Provincia Constitucional del Callao, el cambio poblacional se modelÃ³ a partir de la poblaciÃ³n base, los nacimientos, las defunciones y el saldo migratorio. Este punto es importante porque muestra que la poblaciÃ³n departamental publicada por el INEI no es una simple reparticiÃ³n proporcional del total nacional, sino el resultado de una proyecciÃ³n subnacional con comportamiento demogrÃ¡fico propio. Sin embargo, el mismo boletÃ­n reconoce que, al proyectar independientemente las Ã¡reas mayores, la suma de los departamentos no coincide exactamente con la proyecciÃ³n nacional oficial. Por ello, el INEI introdujo un ajuste posterior para armonizar las proyecciones departamentales con la proyecciÃ³n nacional [INEI, 2019a].
 
-En mortalidad, el INEI construyó primero series de tasa de mortalidad infantil por departamento y sexo combinando métodos directos e indirectos. Para las estimaciones indirectas aplicó el método de Brass a información censal y de encuestas, y para las directas utilizó la historia de nacimientos de la ENDES. El boletín justifica este enfoque mixto porque el registro de defunciones no era suficiente para estimaciones directas robustas. De hecho, el documento menciona que, según el MINSA, la omisión del registro de muertes alcanzó 45,5% en 2016 y 33,3% en 2017. Además, el INEI elaboró tablas de mortalidad propias por departamento y sexo a partir de estadísticas vitales del MINSA para obtener la estructura de mortalidad y la esperanza de vida al nacer [INEI, 2019a]. Este supuesto puede no cumplirse plenamente en el contexto peruano si la cobertura del registro vital sigue siendo heterogénea entre departamentos, sobre todo en ámbitos rurales, amazónicos o con menor acceso institucional. En ese escenario, la mortalidad departamental podría estar más influida por supuestos de corrección que por observación directa, y el impacto en nuestro estudio sería una posible distorsión en la estructura etaria del denominador en edades donde la supervivencia acumulada depende mucho de esas tablas.
+En mortalidad, el INEI construyÃ³ primero series de tasa de mortalidad infantil por departamento y sexo combinando mÃ©todos directos e indirectos. Para las estimaciones indirectas aplicÃ³ el mÃ©todo de Brass a informaciÃ³n censal y de encuestas, y para las directas utilizÃ³ la historia de nacimientos de la ENDES. El boletÃ­n justifica este enfoque mixto porque el registro de defunciones no era suficiente para estimaciones directas robustas. De hecho, el documento menciona que, segÃºn el MINSA, la omisiÃ³n del registro de muertes alcanzÃ³ 45,5% en 2016 y 33,3% en 2017. AdemÃ¡s, el INEI elaborÃ³ tablas de mortalidad propias por departamento y sexo a partir de estadÃ­sticas vitales del MINSA para obtener la estructura de mortalidad y la esperanza de vida al nacer [INEI, 2019a]. Este supuesto puede no cumplirse plenamente en el contexto peruano si la cobertura del registro vital sigue siendo heterogÃ©nea entre departamentos, sobre todo en Ã¡mbitos rurales, amazÃ³nicos o con menor acceso institucional. En ese escenario, la mortalidad departamental podrÃ­a estar mÃ¡s influida por supuestos de correcciÃ³n que por observaciÃ³n directa, y el impacto en nuestro estudio serÃ­a una posible distorsiÃ³n en la estructura etaria del denominador en edades donde la supervivencia acumulada depende mucho de esas tablas.
 
-En fecundidad, el INEI integró múltiples fuentes y métodos para estimar la tasa global de fecundidad y las tasas específicas por edad. El uso del método de Hijos Propios aplicado a los censos de 1993, 2007 y 2017 fue central para reconstruir retrospectivamente la fecundidad por edad en los quince años previos a cada censo. A ello se sumaron las ENDES y las estadísticas vitales de nacimientos. El boletín deja claro que los valores finales por departamento y quinquenio no provienen de una sola fuente, sino del análisis conjunto de la tendencia histórica proveniente de todas ellas [INEI, 2019a]. Este supuesto puede volverse frágil en departamentos donde la fecundidad cambia con rapidez por urbanización acelerada, cambios en acceso a anticoncepción o migración selectiva. Si esas transiciones son más abruptas de lo que capta la combinación de fuentes, las tasas proyectadas pueden suavizar en exceso la dinámica reciente. En nuestro caso, el impacto sería una base poblacional menos sensible a cambios reales en cohortes jóvenes, lo que podría afectar denominadores de análisis en infancia, adolescencia y edad reproductiva.
+En fecundidad, el INEI integrÃ³ mÃºltiples fuentes y mÃ©todos para estimar la tasa global de fecundidad y las tasas especÃ­ficas por edad. El uso del mÃ©todo de Hijos Propios aplicado a los censos de 1993, 2007 y 2017 fue central para reconstruir retrospectivamente la fecundidad por edad en los quince aÃ±os previos a cada censo. A ello se sumaron las ENDES y las estadÃ­sticas vitales de nacimientos. El boletÃ­n deja claro que los valores finales por departamento y quinquenio no provienen de una sola fuente, sino del anÃ¡lisis conjunto de la tendencia histÃ³rica proveniente de todas ellas [INEI, 2019a]. Este supuesto puede volverse frÃ¡gil en departamentos donde la fecundidad cambia con rapidez por urbanizaciÃ³n acelerada, cambios en acceso a anticoncepciÃ³n o migraciÃ³n selectiva. Si esas transiciones son mÃ¡s abruptas de lo que capta la combinaciÃ³n de fuentes, las tasas proyectadas pueden suavizar en exceso la dinÃ¡mica reciente. En nuestro caso, el impacto serÃ­a una base poblacional menos sensible a cambios reales en cohortes jÃ³venes, lo que podrÃ­a afectar denominadores de anÃ¡lisis en infancia, adolescencia y edad reproductiva.
 
-En migración, el boletín reconoce explícitamente que se trata del componente más difícil de medir. Para la migración interna, estimó saldos netos por departamento, sexo y grupos quinquenales de edad a partir de la pregunta censal sobre lugar de residencia cinco años antes. Para completar el grupo 0-4 años, utilizó la relación niños-mujer bajo el supuesto de que las madres migran con sus hijos. Para la migración internacional, el INEI señala que no dispone de fuentes directas equivalentes a registros permanentes de población y por ello estimó el saldo a partir de registros de emigrantes declarados que abandonaron el país y no retornaron al cabo de un año. El mismo documento advierte además que la migración internacional ilegal produce subestimación [INEI, 2019a]. Este supuesto puede fallar con facilidad en el Perú, donde la migración reciente ha mostrado alta volatilidad y donde existen desplazamientos temporales, retornos parciales y flujos no registrados. El impacto para nuestro estudio es relevante, porque sesgos en migración pueden alterar la coherencia territorial del denominador, especialmente en departamentos amazónicos, fronterizos o altamente expulsores y receptores de población.
+En migraciÃ³n, el boletÃ­n reconoce explÃ­citamente que se trata del componente mÃ¡s difÃ­cil de medir. Para la migraciÃ³n interna, estimÃ³ saldos netos por departamento, sexo y grupos quinquenales de edad a partir de la pregunta censal sobre lugar de residencia cinco aÃ±os antes. Para completar el grupo 0-4 aÃ±os, utilizÃ³ la relaciÃ³n niÃ±os-mujer bajo el supuesto de que las madres migran con sus hijos. Para la migraciÃ³n internacional, el INEI seÃ±ala que no dispone de fuentes directas equivalentes a registros permanentes de poblaciÃ³n y por ello estimÃ³ el saldo a partir de registros de emigrantes declarados que abandonaron el paÃ­s y no retornaron al cabo de un aÃ±o. El mismo documento advierte ademÃ¡s que la migraciÃ³n internacional ilegal produce subestimaciÃ³n [INEI, 2019a]. Este supuesto puede fallar con facilidad en el PerÃº, donde la migraciÃ³n reciente ha mostrado alta volatilidad y donde existen desplazamientos temporales, retornos parciales y flujos no registrados. El impacto para nuestro estudio es relevante, porque sesgos en migraciÃ³n pueden alterar la coherencia territorial del denominador, especialmente en departamentos amazÃ³nicos, fronterizos o altamente expulsores y receptores de poblaciÃ³n.
 
-Una etapa metodológica particularmente importante fue la construcción de la población base de cada departamento. El Boletín N.° 39 indica que primero se suavizó la población por sexo y grupos quinquenales de edad de las 25 áreas mayores usando la hoja de cálculo AGESMTH del sistema PAS de la Oficina de Censos de los Estados Unidos. Ese módulo incorpora varios métodos de suavización, entre ellos Carrier-Farrag, Karup-King/Newton, Arriaga, United Nations y Strong. Luego esa estructura suavizada se llevó al 30 de junio de 1990 con la tasa de crecimiento intercensal 1981-1993 del área correspondiente. Sin embargo, el propio boletín reconoce que al aplicar directamente a esa base los componentes de fecundidad, mortalidad y migración, las estructuras se distorsionaban en forma desmesurada. Para corregirlo, el INEI optó por utilizar como población base departamental la estructura por sexo y grupos quinquenales de edad del Censo 1993 llevada al 30 de junio de 1990, a la que aplicó los componentes demográficos estimados [INEI, 2019a]. Esto implica que la base inicial de la proyección ya contiene una decisión correctiva fuerte, introducida para estabilizar la forma de la pirámide poblacional.
+Una etapa metodolÃ³gica particularmente importante fue la construcciÃ³n de la poblaciÃ³n base de cada departamento. El BoletÃ­n N.Â° 39 indica que primero se suavizÃ³ la poblaciÃ³n por sexo y grupos quinquenales de edad de las 25 Ã¡reas mayores usando la hoja de cÃ¡lculo AGESMTH del sistema PAS de la Oficina de Censos de los Estados Unidos. Ese mÃ³dulo incorpora varios mÃ©todos de suavizaciÃ³n, entre ellos Carrier-Farrag, Karup-King/Newton, Arriaga, United Nations y Strong. Luego esa estructura suavizada se llevÃ³ al 30 de junio de 1990 con la tasa de crecimiento intercensal 1981-1993 del Ã¡rea correspondiente. Sin embargo, el propio boletÃ­n reconoce que al aplicar directamente a esa base los componentes de fecundidad, mortalidad y migraciÃ³n, las estructuras se distorsionaban en forma desmesurada. Para corregirlo, el INEI optÃ³ por utilizar como poblaciÃ³n base departamental la estructura por sexo y grupos quinquenales de edad del Censo 1993 llevada al 30 de junio de 1990, a la que aplicÃ³ los componentes demogrÃ¡ficos estimados [INEI, 2019a]. Esto implica que la base inicial de la proyecciÃ³n ya contiene una decisiÃ³n correctiva fuerte, introducida para estabilizar la forma de la pirÃ¡mide poblacional.
 
-Después de obtener las proyecciones departamentales quinquenales, el INEI aplicó un ajuste de coherencia con la proyección nacional oficial mediante el método de tabla cuadrada. El documento explica que este procedimiento se usó para ajustar no solo las poblaciones por sexo y año, sino también los nacimientos, las defunciones y el saldo migratorio neto de cada departamento, asegurando que la suma subnacional fuera consistente con el total nacional publicado en el Boletín N.° 38 [INEI, 2019a]. Este supuesto de coherencia es metodológicamente razonable, pero podría ocultar discrepancias reales entre el patrón nacional y los patrones subnacionales si los errores de medición no están distribuidos uniformemente. Para el Perú, donde la calidad de registros y la dinámica migratoria no son homogéneas, el efecto podría ser una redistribución de diferencias estructurales hacia los departamentos. En términos analíticos, el impacto es que el denominador departamental gana consistencia aditiva, pero puede perder algo de fidelidad local en áreas con trayectorias demográficas muy atípicas.
+DespuÃ©s de obtener las proyecciones departamentales quinquenales, el INEI aplicÃ³ un ajuste de coherencia con la proyecciÃ³n nacional oficial mediante el mÃ©todo de tabla cuadrada. El documento explica que este procedimiento se usÃ³ para ajustar no solo las poblaciones por sexo y aÃ±o, sino tambiÃ©n los nacimientos, las defunciones y el saldo migratorio neto de cada departamento, asegurando que la suma subnacional fuera consistente con el total nacional publicado en el BoletÃ­n N.Â° 38 [INEI, 2019a]. Este supuesto de coherencia es metodolÃ³gicamente razonable, pero podrÃ­a ocultar discrepancias reales entre el patrÃ³n nacional y los patrones subnacionales si los errores de mediciÃ³n no estÃ¡n distribuidos uniformemente. Para el PerÃº, donde la calidad de registros y la dinÃ¡mica migratoria no son homogÃ©neas, el efecto podrÃ­a ser una redistribuciÃ³n de diferencias estructurales hacia los departamentos. En tÃ©rminos analÃ­ticos, el impacto es que el denominador departamental gana consistencia aditiva, pero puede perder algo de fidelidad local en Ã¡reas con trayectorias demogrÃ¡ficas muy atÃ­picas.
 
-El siguiente paso fue la desagregación de la población departamental por grupos quinquenales de edad a años calendario, utilizando los multiplicadores de Karup-King [INEI, 2019a]. Posteriormente, el boletín de edad simple tomó esas proyecciones por sexo y grupos quinquenales y realizó una transformación adicional mediante los multiplicadores de Sprague. Para la población de 5 a 69 años, la desagregación se hizo aplicando multiplicadores centrales o semi-extremos según la posición del grupo. El grupo 0-4 recibió un tratamiento especial mediante rejuvenecimiento del grupo 5-9 del momento t+5 y el uso de relaciones de sobrevivencia derivadas de la población estacionaria de tablas de mortalidad. Para el grupo 1-4 se utilizó además la estructura implícita en las tablas modelo de Coale y Demeny, modelo oeste, con interpolación lineal del nivel correspondiente. En edades avanzadas, el boletín de edad simple reconoce que la desagregación directa desde los 80 años puede producir resultados incoherentes, por lo que abre el grupo 80 y más en 80-84, 85-89, 90-94 y 95 y más, estima relaciones de sobrevivencia por interpolación lineal en las tablas modelo de Coale y Demeny y luego aplica nuevamente Sprague [INEI, 2020].
+El siguiente paso fue la desagregaciÃ³n de la poblaciÃ³n departamental por grupos quinquenales de edad a aÃ±os calendario, utilizando los multiplicadores de Karup-King [INEI, 2019a]. Posteriormente, el boletÃ­n de edad simple tomÃ³ esas proyecciones por sexo y grupos quinquenales y realizÃ³ una transformaciÃ³n adicional mediante los multiplicadores de Sprague. Para la poblaciÃ³n de 5 a 69 aÃ±os, la desagregaciÃ³n se hizo aplicando multiplicadores centrales o semi-extremos segÃºn la posiciÃ³n del grupo. El grupo 0-4 recibiÃ³ un tratamiento especial mediante rejuvenecimiento del grupo 5-9 del momento t+5 y el uso de relaciones de sobrevivencia derivadas de la poblaciÃ³n estacionaria de tablas de mortalidad. Para el grupo 1-4 se utilizÃ³ ademÃ¡s la estructura implÃ­cita en las tablas modelo de Coale y Demeny, modelo oeste, con interpolaciÃ³n lineal del nivel correspondiente. En edades avanzadas, el boletÃ­n de edad simple reconoce que la desagregaciÃ³n directa desde los 80 aÃ±os puede producir resultados incoherentes, por lo que abre el grupo 80 y mÃ¡s en 80-84, 85-89, 90-94 y 95 y mÃ¡s, estima relaciones de sobrevivencia por interpolaciÃ³n lineal en las tablas modelo de Coale y Demeny y luego aplica nuevamente Sprague [INEI, 2020].
 
-Este último paso es especialmente importante para nuestro uso en carga de enfermedad. El mismo boletín de edad simple concluye que la descomposición a edades simples y años calendario es una solución basada fundamentalmente en métodos matemáticos y que, por tanto, no cumple los requisitos de una proyección poblacional íntegramente modelada con ese nivel de desagregación [INEI, 2020]. Ese reconocimiento debe mantenerse visible en nuestro anexo, porque define con precisión la naturaleza del insumo. El denominador que usamos es oficial y coherente con la producción demográfica nacional, pero no es una observación directa ni una proyección completa a edad simple desde el origen.
+Este Ãºltimo paso es especialmente importante para nuestro uso en carga de enfermedad. El mismo boletÃ­n de edad simple concluye que la descomposiciÃ³n a edades simples y aÃ±os calendario es una soluciÃ³n basada fundamentalmente en mÃ©todos matemÃ¡ticos y que, por tanto, no cumple los requisitos de una proyecciÃ³n poblacional Ã­ntegramente modelada con ese nivel de desagregaciÃ³n [INEI, 2020]. Ese reconocimiento debe mantenerse visible en nuestro anexo, porque define con precisiÃ³n la naturaleza del insumo. El denominador que usamos es oficial y coherente con la producciÃ³n demogrÃ¡fica nacional, pero no es una observaciÃ³n directa ni una proyecciÃ³n completa a edad simple desde el origen.
 
-En consecuencia, el presente componente no reproduce la metodología demográfica completa del INEI. Utiliza como punto de partida el producto oficial final, ya proyectado, ajustado y desagregado. A partir de él, realiza una armonización analítica orientada a su integración en el pipeline de carga de enfermedad. La validez de nuestro denominador depende, por tanto, tanto de la solidez de la cadena metodológica oficial como de la capacidad del componente para preservar su coherencia al traducirla a un dataset epidemiológico reproducible.
+En consecuencia, el presente componente no reproduce la metodologÃ­a demogrÃ¡fica completa del INEI. Utiliza como punto de partida el producto oficial final, ya proyectado, ajustado y desagregado. A partir de Ã©l, realiza una armonizaciÃ³n analÃ­tica orientada a su integraciÃ³n en el pipeline de carga de enfermedad. La validez de nuestro denominador depende, por tanto, tanto de la solidez de la cadena metodolÃ³gica oficial como de la capacidad del componente para preservar su coherencia al traducirla a un dataset epidemiolÃ³gico reproducible.
 
-### Tabla 1. Fuentes de información documentadas por el INEI en la proyección departamental
+### Tabla 1. Fuentes de informaciÃ³n documentadas por el INEI en la proyecciÃ³n departamental
 
 | Componente | Fuente reportada por INEI | Periodo o detalle reportado | Uso principal |
 |---|---|---|---|
-| Proyección nacional de referencia | Boletín de Análisis Demográfico N.° 38 | Población nacional 1950-2070, por sexo y grupos quinquenales | Base de coherencia para la proyección departamental |
-| Población y estructura reciente | Censos nacionales de población | 1993, 2007 y 2017 | Magnitud, composición y distribución de la población |
-| Mortalidad infantil | Censos, ENDES y estadísticas vitales de defunciones | Censos 1993, 2007 y 2017; ENDES 1996, 2000 y 2009-2018; defunciones centradas en 1993, 2007 y 2015 | Estimación de TMI con métodos directos e indirectos |
-| Mortalidad general | Estadísticas vitales del MINSA | Periodo histórico analizado | Construcción de tablas de mortalidad por departamento y sexo |
-| Fecundidad | ENDES, estadísticas vitales de nacimientos y censos | ENDES 1996-2000 y 2009-2018; nacimientos 1992-2016; censos 1993, 2007 y 2017 | Estimación de TGF, tasas específicas y estructura de fecundidad |
-| Identidad y registros recientes | RENIEC | 2017 | Apoyo a la actualización demográfica reciente |
-| Migración interna | Censos nacionales | Pregunta de residencia cinco años antes en 1993, 2007 y 2017 | Saldos netos por sexo y edad |
-| Migración internacional | MIGRACIONES | Emigrantes que no retornan al cabo de un año; información reciente de peruanos y extranjeros residentes | Estimación del saldo migratorio internacional |
+| ProyecciÃ³n nacional de referencia | BoletÃ­n de AnÃ¡lisis DemogrÃ¡fico N.Â° 38 | PoblaciÃ³n nacional 1950-2070, por sexo y grupos quinquenales | Base de coherencia para la proyecciÃ³n departamental |
+| PoblaciÃ³n y estructura reciente | Censos nacionales de poblaciÃ³n | 1993, 2007 y 2017 | Magnitud, composiciÃ³n y distribuciÃ³n de la poblaciÃ³n |
+| Mortalidad infantil | Censos, ENDES y estadÃ­sticas vitales de defunciones | Censos 1993, 2007 y 2017; ENDES 1996, 2000 y 2009-2018; defunciones centradas en 1993, 2007 y 2015 | EstimaciÃ³n de TMI con mÃ©todos directos e indirectos |
+| Mortalidad general | EstadÃ­sticas vitales del MINSA | Periodo histÃ³rico analizado | ConstrucciÃ³n de tablas de mortalidad por departamento y sexo |
+| Fecundidad | ENDES, estadÃ­sticas vitales de nacimientos y censos | ENDES 1996-2000 y 2009-2018; nacimientos 1992-2016; censos 1993, 2007 y 2017 | EstimaciÃ³n de TGF, tasas especÃ­ficas y estructura de fecundidad |
+| Identidad y registros recientes | RENIEC | 2017 | Apoyo a la actualizaciÃ³n demogrÃ¡fica reciente |
+| MigraciÃ³n interna | Censos nacionales | Pregunta de residencia cinco aÃ±os antes en 1993, 2007 y 2017 | Saldos netos por sexo y edad |
+| MigraciÃ³n internacional | MIGRACIONES | Emigrantes que no retornan al cabo de un aÃ±o; informaciÃ³n reciente de peruanos y extranjeros residentes | EstimaciÃ³n del saldo migratorio internacional |
 
-### Tabla 2. Métodos documentados por el INEI en la proyección departamental
+### Tabla 2. MÃ©todos documentados por el INEI en la proyecciÃ³n departamental
 
-| Etapa | Método o procedimiento | Aplicación específica |
+| Etapa | MÃ©todo o procedimiento | AplicaciÃ³n especÃ­fica |
 |---|---|---|
-| Proyección subnacional | Método de los componentes | Proyección por departamento a partir de nacimientos, defunciones y saldo migratorio |
-| Mortalidad infantil | Método indirecto de Brass | Estimación indirecta de TMI con información censal y de encuestas |
+| ProyecciÃ³n subnacional | MÃ©todo de los componentes | ProyecciÃ³n por departamento a partir de nacimientos, defunciones y saldo migratorio |
+| Mortalidad infantil | MÃ©todo indirecto de Brass | EstimaciÃ³n indirecta de TMI con informaciÃ³n censal y de encuestas |
 | Mortalidad infantil | Historia de nacimientos de la ENDES | Estimaciones directas de mortalidad infantil |
-| Mortalidad general | Tablas de mortalidad propias | Derivación de estructura de mortalidad y esperanza de vida al nacer |
-| Fecundidad retrospectiva | Método de Hijos Propios | Reconstrucción de tasas específicas y TGF a partir de censos |
-| Estructura de fecundidad | Análisis de tendencia de múltiples fuentes | Integración de censos, encuestas y registros vitales |
-| Población base | Suavización con AGESMTH del PAS | Ensayo de métodos Carrier-Farrag, Karup-King/Newton, Arriaga, United Nations y Strong |
-| Ajuste de coherencia | Tabla cuadrada | Compatibilización entre proyecciones departamentales y proyección nacional oficial |
-| Desagregación temporal | Multiplicadores de Karup-King | Paso de quinquenios a años calendario |
+| Mortalidad general | Tablas de mortalidad propias | DerivaciÃ³n de estructura de mortalidad y esperanza de vida al nacer |
+| Fecundidad retrospectiva | MÃ©todo de Hijos Propios | ReconstrucciÃ³n de tasas especÃ­ficas y TGF a partir de censos |
+| Estructura de fecundidad | AnÃ¡lisis de tendencia de mÃºltiples fuentes | IntegraciÃ³n de censos, encuestas y registros vitales |
+| PoblaciÃ³n base | SuavizaciÃ³n con AGESMTH del PAS | Ensayo de mÃ©todos Carrier-Farrag, Karup-King/Newton, Arriaga, United Nations y Strong |
+| Ajuste de coherencia | Tabla cuadrada | CompatibilizaciÃ³n entre proyecciones departamentales y proyecciÃ³n nacional oficial |
+| DesagregaciÃ³n temporal | Multiplicadores de Karup-King | Paso de quinquenios a aÃ±os calendario |
 
-### Tabla 3. Métodos de desagregación de edad documentados en el boletín de edad simple
+### Tabla 3. MÃ©todos de desagregaciÃ³n de edad documentados en el boletÃ­n de edad simple
 
-| Tramo etario | Método principal | Procedimiento específico | Referencias citadas por INEI |
+| Tramo etario | MÃ©todo principal | Procedimiento especÃ­fico | Referencias citadas por INEI |
 |---|---|---|---|
-| 5-69 años | Multiplicadores de Sprague | Descomposición de grupos quinquenales en edades simples, distinguiendo grupos extremos, semi-extremos y centrales | Shryock, Siegel and Associates (1976) |
-| 0-4 años | Rejuvenecimiento del grupo 5-9 y relaciones de sobrevivencia | Uso de la población 5-9 en t+5 y de probabilidades 5Px derivadas de la población estacionaria | Moya (1987); Coale y Demeny |
-| 1-4 años dentro del 0-4 | Tablas modelo de mortalidad | Interpolación lineal del nivel correspondiente al tiempo vivido L1-4 | Coale y Demeny (1983) |
-| 70-84 años y grupo abierto | Apertura del grupo 80 y más e interpolación de sobrevivencia | Apertura en 80-84, 85-89, 90-94 y 95 y más; uso de Coale-Demeny, modelo oeste, y luego Sprague | Coale y Demeny (1983); Coale y Guo (1989, 1990) |
-| Años calendario | Interpolación previa desde el Boletín 39 | La desagregación a edad simple se aplica sobre una población ya expresada por años calendario | INEI (2019a); INEI (2020) |
+| 5-69 aÃ±os | Multiplicadores de Sprague | DescomposiciÃ³n de grupos quinquenales en edades simples, distinguiendo grupos extremos, semi-extremos y centrales | Shryock, Siegel and Associates (1976) |
+| 0-4 aÃ±os | Rejuvenecimiento del grupo 5-9 y relaciones de sobrevivencia | Uso de la poblaciÃ³n 5-9 en t+5 y de probabilidades 5Px derivadas de la poblaciÃ³n estacionaria | Moya (1987); Coale y Demeny |
+| 1-4 aÃ±os dentro del 0-4 | Tablas modelo de mortalidad | InterpolaciÃ³n lineal del nivel correspondiente al tiempo vivido L1-4 | Coale y Demeny (1983) |
+| 70-84 aÃ±os y grupo abierto | Apertura del grupo 80 y mÃ¡s e interpolaciÃ³n de sobrevivencia | Apertura en 80-84, 85-89, 90-94 y 95 y mÃ¡s; uso de Coale-Demeny, modelo oeste, y luego Sprague | Coale y Demeny (1983); Coale y Guo (1989, 1990) |
+| AÃ±os calendario | InterpolaciÃ³n previa desde el BoletÃ­n 39 | La desagregaciÃ³n a edad simple se aplica sobre una poblaciÃ³n ya expresada por aÃ±os calendario | INEI (2019a); INEI (2020) |
 
-### Referencias metodológicas citadas por el INEI y relevantes para esta sección
+### Referencias metodolÃ³gicas citadas por el INEI y relevantes para esta secciÃ³n
 
-- Brass W. *Métodos para Estimar la Fecundidad y la Mortalidad en Poblaciones con Datos Limitados*. CELADE, Serie E N.° 14.
-- Camisa Z. *Introducción al Estudio de la Fecundidad*. CELADE, Serie B N.° 1007.
-- Camisa Z. *Borrador de Notas Referentes a la Aplicación del Método de los Hijos Propios*.
-- CELADE. *Métodos para Proyecciones Demográficas*. Serie E N.° 1003.
-- CELADE-DANE. *Métodos para Proyecciones Subnacionales de Población*.
-- Chackiel J. *Estructura de la Fecundidad por Edades: Ajuste y Proyección Mediante la Función de Gompertz Linealizada*.
+- Brass W. *MÃ©todos para Estimar la Fecundidad y la Mortalidad en Poblaciones con Datos Limitados*. CELADE, Serie E N.Â° 14.
+- Camisa Z. *IntroducciÃ³n al Estudio de la Fecundidad*. CELADE, Serie B N.Â° 1007.
+- Camisa Z. *Borrador de Notas Referentes a la AplicaciÃ³n del MÃ©todo de los Hijos Propios*.
+- CELADE. *MÃ©todos para Proyecciones DemogrÃ¡ficas*. Serie E N.Â° 1003.
+- CELADE-DANE. *MÃ©todos para Proyecciones Subnacionales de PoblaciÃ³n*.
+- Chackiel J. *Estructura de la Fecundidad por Edades: Ajuste y ProyecciÃ³n Mediante la FunciÃ³n de Gompertz Linealizada*.
 - Coale A, Demeny P. *Regional Model Life Tables and Stable Populations*. Second Edition.
 - Coale A, Guo G. *Revised Regional Model Life Tables at Very Low Levels of Mortality*.
-- Feeney G. *El Método de Hijos Propios para Estimar Tasas de Fecundidad por Edad*.
-- INEI. *Perú: Estimaciones y Proyecciones de la Población Nacional, 1950-2070*. Boletín de Análisis Demográfico N.° 38.
-- INEI. *Perú: Estimaciones y Proyecciones de la Población Total por departamento, 1995-2030*. Boletín de Análisis Demográfico N.° 39.
-- INEI. *Perú: Estimaciones y Proyecciones de Población Departamental por Años Calendario y Edad Simple, 1995-2030*. Boletín Especial N.° 25.
-- Moya O. *Descomposición del grupo de menores de 5 años en edades simples en base a las proyecciones de población*. Notas de Población N.° 45.
+- Feeney G. *El MÃ©todo de Hijos Propios para Estimar Tasas de Fecundidad por Edad*.
+- INEI. *PerÃº: Estimaciones y Proyecciones de la PoblaciÃ³n Nacional, 1950-2070*. BoletÃ­n de AnÃ¡lisis DemogrÃ¡fico N.Â° 38.
+- INEI. *PerÃº: Estimaciones y Proyecciones de la PoblaciÃ³n Total por departamento, 1995-2030*. BoletÃ­n de AnÃ¡lisis DemogrÃ¡fico N.Â° 39.
+- INEI. *PerÃº: Estimaciones y Proyecciones de PoblaciÃ³n Departamental por AÃ±os Calendario y Edad Simple, 1995-2030*. BoletÃ­n Especial N.Â° 25.
+- Moya O. *DescomposiciÃ³n del grupo de menores de 5 aÃ±os en edades simples en base a las proyecciones de poblaciÃ³n*. Notas de PoblaciÃ³n N.Â° 45.
 - Shryock HS, Siegel JS and Associates. *The Methods and Materials of Demography*.
 
 ### Supuestos y limitaciones relevantes para el uso de esta fuente en el estudio
 
-El uso de esta fuente oficial descansa primero en el supuesto de que la combinación de censos, encuestas y registros administrativos permite reconstruir con suficiente estabilidad la evolución de la fecundidad, la mortalidad y la migración por departamento. En el caso peruano, ese supuesto es razonable, pero no perfecto. Puede debilitarse en departamentos donde la cobertura de registros vitales es incompleta, donde la migración es muy dinámica o donde la transición demográfica es más rápida de lo que captan las observaciones disponibles. Si ello ocurre, la proyección oficial puede representar mejor la tendencia promedio que la trayectoria local más reciente.
+El uso de esta fuente oficial descansa primero en el supuesto de que la combinaciÃ³n de censos, encuestas y registros administrativos permite reconstruir con suficiente estabilidad la evoluciÃ³n de la fecundidad, la mortalidad y la migraciÃ³n por departamento. En el caso peruano, ese supuesto es razonable, pero no perfecto. Puede debilitarse en departamentos donde la cobertura de registros vitales es incompleta, donde la migraciÃ³n es muy dinÃ¡mica o donde la transiciÃ³n demogrÃ¡fica es mÃ¡s rÃ¡pida de lo que captan las observaciones disponibles. Si ello ocurre, la proyecciÃ³n oficial puede representar mejor la tendencia promedio que la trayectoria local mÃ¡s reciente.
 
-Un segundo supuesto es que los ajustes de coherencia introducidos por el INEI, en particular la tabla cuadrada para compatibilizar departamentos con el total nacional, mejoran la consistencia sin introducir distorsiones sustantivas en la estructura subnacional. En el Perú este supuesto podría no cumplirse totalmente si las discrepancias entre la proyección nacional y las departamentales se concentran en pocos territorios con patrones atípicos. En tal escenario, el ajuste preserva la aditividad nacional, pero puede redistribuir parte del error hacia departamentos específicos. Para nuestro estudio, el impacto sería una posible pérdida de fidelidad local a cambio de mayor coherencia agregada.
+Un segundo supuesto es que los ajustes de coherencia introducidos por el INEI, en particular la tabla cuadrada para compatibilizar departamentos con el total nacional, mejoran la consistencia sin introducir distorsiones sustantivas en la estructura subnacional. En el PerÃº este supuesto podrÃ­a no cumplirse totalmente si las discrepancias entre la proyecciÃ³n nacional y las departamentales se concentran en pocos territorios con patrones atÃ­picos. En tal escenario, el ajuste preserva la aditividad nacional, pero puede redistribuir parte del error hacia departamentos especÃ­ficos. Para nuestro estudio, el impacto serÃ­a una posible pÃ©rdida de fidelidad local a cambio de mayor coherencia agregada.
 
-Un tercer supuesto es que las desagregaciones temporales y etarias realizadas con Karup-King y Sprague representan adecuadamente la estructura temporal y por edad que subyace a las proyecciones quinquenales. Esta suposición es útil para fines operativos, pero puede ser más frágil en edades extremas, donde los cambios de fecundidad, mortalidad o migración afectan con mayor intensidad la forma de la distribución. El propio boletín de edad simple reconoce esta fragilidad cuando señala que la descomposición a edades simples es una solución fundamentalmente matemática y no una proyección completa a ese nivel de desagregación.
+Un tercer supuesto es que las desagregaciones temporales y etarias realizadas con Karup-King y Sprague representan adecuadamente la estructura temporal y por edad que subyace a las proyecciones quinquenales. Esta suposiciÃ³n es Ãºtil para fines operativos, pero puede ser mÃ¡s frÃ¡gil en edades extremas, donde los cambios de fecundidad, mortalidad o migraciÃ³n afectan con mayor intensidad la forma de la distribuciÃ³n. El propio boletÃ­n de edad simple reconoce esta fragilidad cuando seÃ±ala que la descomposiciÃ³n a edades simples es una soluciÃ³n fundamentalmente matemÃ¡tica y no una proyecciÃ³n completa a ese nivel de desagregaciÃ³n.
 
-La principal limitación de mortalidad es la omisión del registro de defunciones, reconocida por el propio INEI. Su impacto no se limita a la estimación de la mortalidad infantil. También afecta la construcción de tablas de mortalidad y, por tanto, la forma de la supervivencia implícita en la proyección poblacional. Para un estudio de carga de enfermedad, esto importa porque la distribución por edad de la población, sobre todo en edades adultas y avanzadas, depende en parte de esas relaciones de mortalidad.
+La principal limitaciÃ³n de mortalidad es la omisiÃ³n del registro de defunciones, reconocida por el propio INEI. Su impacto no se limita a la estimaciÃ³n de la mortalidad infantil. TambiÃ©n afecta la construcciÃ³n de tablas de mortalidad y, por tanto, la forma de la supervivencia implÃ­cita en la proyecciÃ³n poblacional. Para un estudio de carga de enfermedad, esto importa porque la distribuciÃ³n por edad de la poblaciÃ³n, sobre todo en edades adultas y avanzadas, depende en parte de esas relaciones de mortalidad.
 
-La principal limitación del componente migratorio es la submedición potencial de la migración internacional y la dificultad estructural para medir movimientos recientes, temporales o no registrados. Su impacto es especialmente relevante en departamentos fronterizos, amazónicos o de intensa movilidad. En nuestro contexto, esta limitación puede alterar la comparabilidad territorial del denominador si una parte importante del cambio poblacional reciente no quedó bien captada por la proyección oficial.
+La principal limitaciÃ³n del componente migratorio es la submediciÃ³n potencial de la migraciÃ³n internacional y la dificultad estructural para medir movimientos recientes, temporales o no registrados. Su impacto es especialmente relevante en departamentos fronterizos, amazÃ³nicos o de intensa movilidad. En nuestro contexto, esta limitaciÃ³n puede alterar la comparabilidad territorial del denominador si una parte importante del cambio poblacional reciente no quedÃ³ bien captada por la proyecciÃ³n oficial.
 
-La principal limitación del boletín de edad simple es que la edad simple no proviene de una proyección demográfica modelada desde el inicio con ese nivel de detalle, sino de una cadena de interpolaciones y aperturas de grupos etarios. El impacto de esta limitación es mayor en el cálculo de indicadores muy sensibles a la estructura por edad exacta, como los AVP, y menor en análisis que luego agregan a grupos quinquenales o decenales. Por ello, nuestro uso del denominador debe reconocer que combina solidez institucional con una resolución etaria que es, en parte, derivada.
+La principal limitaciÃ³n del boletÃ­n de edad simple es que la edad simple no proviene de una proyecciÃ³n demogrÃ¡fica modelada desde el inicio con ese nivel de detalle, sino de una cadena de interpolaciones y aperturas de grupos etarios. El impacto de esta limitaciÃ³n es mayor en el cÃ¡lculo de indicadores muy sensibles a la estructura por edad exacta, como los AVP, y menor en anÃ¡lisis que luego agregan a grupos quinquenales o decenales. Por ello, nuestro uso del denominador debe reconocer que combina solidez institucional con una resoluciÃ³n etaria que es, en parte, derivada.
 
-### Referencias citadas en esta sección
+### Referencias citadas en esta secciÃ³n
 
-- INEI. 2019a. *Perú: Estimaciones y Proyecciones de la Población Total por departamento, 1995-2030*. Boletín de Análisis Demográfico N.° 39.
-- INEI. 2020. *Perú: Estimaciones y Proyecciones de Población Departamental por Años Calendario y Edad Simple, 1995-2030*. Boletín Especial N.° 25.
+- INEI. 2019a. *PerÃº: Estimaciones y Proyecciones de la PoblaciÃ³n Total por departamento, 1995-2030*. BoletÃ­n de AnÃ¡lisis DemogrÃ¡fico N.Â° 39.
+- INEI. 2020. *PerÃº: Estimaciones y Proyecciones de PoblaciÃ³n Departamental por AÃ±os Calendario y Edad Simple, 1995-2030*. BoletÃ­n Especial N.Â° 25.
 
 ```{mermaid}
 flowchart TB
 
 A["Fuentes primarias<br/>Censos 1993, 2007, 2017;<br/>ENDES 1996-2000 y 2009-2018;<br/>nacimientos 1992-2016;<br/>defunciones 1993, 2007 y 2015;<br/>RENIEC 2017; MIGRACIONES"]:::structural
 
-B(("Boletín 38<br/>Población nacional<br/>por sexo y grupos quinquenales<br/>1950-2070")):::observed
-C(("Boletín 39<br/>Población departamental<br/>por sexo y grupos quinquenales<br/>1995-2030")):::observed
-D(("Boletín 25<br/>Población departamental<br/>por sexo, edad simple<br/>y año calendario<br/>1995-2030")):::observed
-E(("Componente demográfico<br/>del estudio")):::final
+B(("BoletÃ­n 38<br/>PoblaciÃ³n nacional<br/>por sexo y grupos quinquenales<br/>1950-2070")):::observed
+C(("BoletÃ­n 39<br/>PoblaciÃ³n departamental<br/>por sexo y grupos quinquenales<br/>1995-2030")):::observed
+D(("BoletÃ­n 25<br/>PoblaciÃ³n departamental<br/>por sexo, edad simple<br/>y aÃ±o calendario<br/>1995-2030")):::observed
+E(("Componente demogrÃ¡fico<br/>del estudio")):::final
 
 X["Insumo del estudio"]:::final
 
@@ -229,7 +240,7 @@ flowchart LR
 subgraph M["Mortalidad"]
 direction TB
 A1["Fuentes:<br/>Censos 1993, 2007, 2017;<br/>ENDES; defunciones MINSA"]:::structural
-A2{{"Métodos:<br/>Brass indirecto;<br/>historia de nacimientos;<br/>tablas de mortalidad"}}:::process
+A2{{"MÃ©todos:<br/>Brass indirecto;<br/>historia de nacimientos;<br/>tablas de mortalidad"}}:::process
 A3(("Producto:<br/>TMI, EVN y estructura<br/>de mortalidad")):::observed
 A1 --> A2 --> A3
 end
@@ -237,16 +248,16 @@ end
 subgraph F["Fecundidad"]
 direction TB
 B1["Fuentes:<br/>ENDES; nacimientos 1992-2016;<br/>censos 1993, 2007, 2017"]:::structural
-B2{{"Métodos:<br/>Hijos propios;<br/>tasas específicas;<br/>análisis de tendencia"}}:::process
+B2{{"MÃ©todos:<br/>Hijos propios;<br/>tasas especÃ­ficas;<br/>anÃ¡lisis de tendencia"}}:::process
 B3(("Producto:<br/>TGF y estructura<br/>de fecundidad")):::observed
 B1 --> B2 --> B3
 end
 
-subgraph G["Migración"]
+subgraph G["MigraciÃ³n"]
 direction TB
 C1["Fuentes:<br/>Censos + MIGRACIONES"]:::structural
-C2{{"Métodos:<br/>residencia 5 años antes;<br/>saldos netos;<br/>ajuste 0-4 niños-mujer"}}:::process
-C3(("Producto:<br/>Migración neta por sexo<br/>y edad")):::observed
+C2{{"MÃ©todos:<br/>residencia 5 aÃ±os antes;<br/>saldos netos;<br/>ajuste 0-4 niÃ±os-mujer"}}:::process
+C3(("Producto:<br/>MigraciÃ³n neta por sexo<br/>y edad")):::observed
 C1 --> C2 --> C3
 end
 
@@ -258,13 +269,13 @@ classDef structural fill:#FDEDEC,stroke:#C0392B,color:#000;
 ```{mermaid}
 flowchart LR
 
-A(("Población quinquenal<br/>Boletín 39")):::observed
-B{{"Interpolación temporal<br/>Karup-King"}}:::process
-C(("Años calendario")):::observed
-D{{"Sprague<br/>5-69 años"}}:::process
-E{{"Tratamiento especial<br/>0-4 años"}}:::process
+A(("PoblaciÃ³n quinquenal<br/>BoletÃ­n 39")):::observed
+B{{"InterpolaciÃ³n temporal<br/>Karup-King"}}:::process
+C(("AÃ±os calendario")):::observed
+D{{"Sprague<br/>5-69 aÃ±os"}}:::process
+E{{"Tratamiento especial<br/>0-4 aÃ±os"}}:::process
 F{{"Tratamiento especial<br/>70+ y 80+"}}:::process
-G(("Población por edad simple")):::final
+G(("PoblaciÃ³n por edad simple")):::final
 
 A --> B --> C
 C --> D --> G
@@ -278,359 +289,359 @@ classDef final fill:#E8DAEF,stroke:#6C3483,color:#000;
 
 ## 3. Definiciones operativas
 
-## 3.1 Población estimada
+## 3.1 PoblaciÃ³n estimada
 
-Para efectos del presente estudio, la población estimada se define como una representación estructurada del tamaño y distribución de la población, desagregada por edad, sexo, ubicación geográfica y año calendario, construida a partir de información oficial del INEI y adaptada para su uso analítico en el contexto de un estudio de carga de enfermedad.
+Para efectos del presente estudio, la poblaciÃ³n estimada se define como una representaciÃ³n estructurada del tamaÃ±o y distribuciÃ³n de la poblaciÃ³n, desagregada por edad, sexo, ubicaciÃ³n geogrÃ¡fica y aÃ±o calendario, construida a partir de informaciÃ³n oficial del INEI y adaptada para su uso analÃ­tico en el contexto de un estudio de carga de enfermedad.
 
-Esta población se basa en estimaciones por edad simple derivadas de proyecciones demográficas por grupos quinquenales, mediante procedimientos de desagregación matemática implementados por el INEI. En consecuencia, la variable edad simple no corresponde a una observación directa ni a una proyección demográfica independiente a ese nivel, sino a una **aproximación interpolada consistente con la estructura etaria subyacente**.
+Esta poblaciÃ³n se basa en estimaciones por edad simple derivadas de proyecciones demogrÃ¡ficas por grupos quinquenales, mediante procedimientos de desagregaciÃ³n matemÃ¡tica implementados por el INEI. En consecuencia, la variable edad simple no corresponde a una observaciÃ³n directa ni a una proyecciÃ³n demogrÃ¡fica independiente a ese nivel, sino a una **aproximaciÃ³n interpolada consistente con la estructura etaria subyacente**.
 
-## 3.2 Naturaleza analítica del dataset poblacional
+## 3.2 Naturaleza analÃ­tica del dataset poblacional
 
-El dataset poblacional construido en este componente debe interpretarse como un **denominador analítico**, diseñado para:
+El dataset poblacional construido en este componente debe interpretarse como un **denominador analÃ­tico**, diseÃ±ado para:
 
--    permitir el cálculo de tasas específicas por edad, sexo, ubicación y año;
+-    permitir el cÃ¡lculo de tasas especÃ­ficas por edad, sexo, ubicaciÃ³n y aÃ±o;
 
--    facilitar la agregación coherente de indicadores epidemiológicos;
+-    facilitar la agregaciÃ³n coherente de indicadores epidemiolÃ³gicos;
 
--    garantizar consistencia interna en el cálculo de métricas de carga de enfermedad.
+-    garantizar consistencia interna en el cÃ¡lculo de mÃ©tricas de carga de enfermedad.
 
-En este sentido, la población estimada no constituye un modelo demográfico completo ni pretende reproducir explícitamente los procesos de fecundidad, mortalidad y migración que determinan la dinámica poblacional.
+En este sentido, la poblaciÃ³n estimada no constituye un modelo demogrÃ¡fico completo ni pretende reproducir explÃ­citamente los procesos de fecundidad, mortalidad y migraciÃ³n que determinan la dinÃ¡mica poblacional.
 
-## 3.3 Diferenciación entre población demográfica y población analítica
+## 3.3 DiferenciaciÃ³n entre poblaciÃ³n demogrÃ¡fica y poblaciÃ³n analÃ­tica
 
 Es fundamental distinguir entre:
 
--    **población demográfica (fuente INEI):** estimaciones oficiales derivadas de proyecciones poblacionales, cuya desagregación por edad simple se obtiene mediante métodos de interpolación estructurada;
+-    **poblaciÃ³n demogrÃ¡fica (fuente INEI):** estimaciones oficiales derivadas de proyecciones poblacionales, cuya desagregaciÃ³n por edad simple se obtiene mediante mÃ©todos de interpolaciÃ³n estructurada;
 
--    **población analítica (presente componente):** versión transformada de dicha información, adaptada para su integración en un pipeline de carga de enfermedad, mediante procesos adicionales de estandarización, validación y, en algunos casos, modelamiento.
+-    **poblaciÃ³n analÃ­tica (presente componente):** versiÃ³n transformada de dicha informaciÃ³n, adaptada para su integraciÃ³n en un pipeline de carga de enfermedad, mediante procesos adicionales de estandarizaciÃ³n, validaciÃ³n y, en algunos casos, modelamiento.
 
-Esta distinción permite delimitar claramente el alcance del componente y evita interpretar el dataset resultante como una estimación demográfica independiente.
+Esta distinciÃ³n permite delimitar claramente el alcance del componente y evita interpretar el dataset resultante como una estimaciÃ³n demogrÃ¡fica independiente.
 
-## 3.4 Interpretación de la edad simple
+## 3.4 InterpretaciÃ³n de la edad simple
 
-La edad simple en el dataset debe interpretarse como una variable continua discretizada que refleja una distribución etaria suavizada, consistente con la estructura poblacional derivada de la fuente oficial.
+La edad simple en el dataset debe interpretarse como una variable continua discretizada que refleja una distribuciÃ³n etaria suavizada, consistente con la estructura poblacional derivada de la fuente oficial.
 
-Dado que su construcción se basa en procedimientos de interpolación y en supuestos demográficos implícitos en la fuente, su uso es particularmente adecuado para:
+Dado que su construcciÃ³n se basa en procedimientos de interpolaciÃ³n y en supuestos demogrÃ¡ficos implÃ­citos en la fuente, su uso es particularmente adecuado para:
 
--    el cálculo de tasas específicas de alta resolución etaria;
+-    el cÃ¡lculo de tasas especÃ­ficas de alta resoluciÃ³n etaria;
 
--    la agregación flexible en distintos grupos de edad;
+-    la agregaciÃ³n flexible en distintos grupos de edad;
 
--    la integración con modelos epidemiológicos que requieren continuidad en la distribución poblacional.
+-    la integraciÃ³n con modelos epidemiolÃ³gicos que requieren continuidad en la distribuciÃ³n poblacional.
 
--    Sin embargo, debe reconocerse que esta variable no representa necesariamente la distribución empírica observada en cada edad individual, sino una aproximación consistente y operacionalmente útil para fines analíticos.
+-    Sin embargo, debe reconocerse que esta variable no representa necesariamente la distribuciÃ³n empÃ­rica observada en cada edad individual, sino una aproximaciÃ³n consistente y operacionalmente Ãºtil para fines analÃ­ticos.
 
-## 4. Construcción del dataset analítico
+## 4. ConstrucciÃ³n del dataset analÃ­tico
 
-4.1 Estandarización de estructuras de entrada
+4.1 EstandarizaciÃ³n de estructuras de entrada
 
-Los datos poblacionales provenientes de la fuente oficial presentan heterogeneidad en su estructura de presentación, incluyendo variaciones en la disposición de encabezados, organización de columnas y formato de las variables. Por ello, el primer paso metodológico consiste en estandarizar dichas estructuras hacia un formato analítico común.
+Los datos poblacionales provenientes de la fuente oficial presentan heterogeneidad en su estructura de presentaciÃ³n, incluyendo variaciones en la disposiciÃ³n de encabezados, organizaciÃ³n de columnas y formato de las variables. Por ello, el primer paso metodolÃ³gico consiste en estandarizar dichas estructuras hacia un formato analÃ­tico comÃºn.
 
-Esta estandarización implica transformar tablas originalmente diseñadas para difusión en una representación longitudinal (“long format”), donde cada fila corresponde a una única combinación de edad, sexo, ubicación y año. Este cambio de estructura no altera el contenido sustantivo de los datos, sino que permite su integración coherente en un esquema analítico uniforme.
+Esta estandarizaciÃ³n implica transformar tablas originalmente diseÃ±adas para difusiÃ³n en una representaciÃ³n longitudinal (â€œlong formatâ€), donde cada fila corresponde a una Ãºnica combinaciÃ³n de edad, sexo, ubicaciÃ³n y aÃ±o. Este cambio de estructura no altera el contenido sustantivo de los datos, sino que permite su integraciÃ³n coherente en un esquema analÃ­tico uniforme.
 
-Desde el punto de vista epidemiológico, este paso es fundamental para garantizar que todas las observaciones sean comparables entre sí y que puedan ser utilizadas como denominadores consistentes en análisis posteriores.
+Desde el punto de vista epidemiolÃ³gico, este paso es fundamental para garantizar que todas las observaciones sean comparables entre sÃ­ y que puedan ser utilizadas como denominadores consistentes en anÃ¡lisis posteriores.
 
-4.2 Armonización de variables clave
+4.2 ArmonizaciÃ³n de variables clave
 
-Una vez estandarizada la estructura, se procede a la armonización de las variables principales:
+Una vez estandarizada la estructura, se procede a la armonizaciÃ³n de las variables principales:
 
-Edad: se transforma a edad simple en años cumplidos, independientemente de la forma original de presentación. Sexo: se asigna de manera consistente a las categorías masculino y femenino en el dataset final. Ubicación geográfica: se normaliza a un conjunto fijo de unidades departamentales y nacional. Año calendario: se extrae y estandariza como variable discreta.
+Edad: se transforma a edad simple en aÃ±os cumplidos, independientemente de la forma original de presentaciÃ³n. Sexo: se asigna de manera consistente a las categorÃ­as masculino y femenino en el dataset final. UbicaciÃ³n geogrÃ¡fica: se normaliza a un conjunto fijo de unidades departamentales y nacional. AÃ±o calendario: se extrae y estandariza como variable discreta.
 
-Este proceso implica resolver ambigüedades presentes en la fuente, como la identificación indirecta del sexo o la coexistencia de distintas representaciones de edad. La armonización asegura que todas las observaciones cumplan con la definición operativa establecida en la sección anterior.
+Este proceso implica resolver ambigÃ¼edades presentes en la fuente, como la identificaciÃ³n indirecta del sexo o la coexistencia de distintas representaciones de edad. La armonizaciÃ³n asegura que todas las observaciones cumplan con la definiciÃ³n operativa establecida en la secciÃ³n anterior.
 
-Debe hacerse explícito que esta etapa no corrige errores demográficos de la fuente, sino que los adapta a un esquema analítico consistente. Por tanto, cualquier sesgo o limitación inherente a los datos originales se preserva en el dataset final.
+Debe hacerse explÃ­cito que esta etapa no corrige errores demogrÃ¡ficos de la fuente, sino que los adapta a un esquema analÃ­tico consistente. Por tanto, cualquier sesgo o limitaciÃ³n inherente a los datos originales se preserva en el dataset final.
 
-4.3 Resolución de inconsistencias estructurales
+4.3 ResoluciÃ³n de inconsistencias estructurales
 
-Durante la integración de los datos pueden surgir inconsistencias estructurales, tales como:
+Durante la integraciÃ³n de los datos pueden surgir inconsistencias estructurales, tales como:
 
-duplicación de registros para una misma combinación analítica; valores fuera de rango en edad o año; presencia de categorías no previstas (por ejemplo, sexo no clasificable); celdas con valores faltantes o inconsistentes.
+duplicaciÃ³n de registros para una misma combinaciÃ³n analÃ­tica; valores fuera de rango en edad o aÃ±o; presencia de categorÃ­as no previstas (por ejemplo, sexo no clasificable); celdas con valores faltantes o inconsistentes.
 
-El método establece reglas explícitas para detectar y resolver estas inconsistencias, priorizando la coherencia interna del dataset. Entre estas reglas destacan:
+El mÃ©todo establece reglas explÃ­citas para detectar y resolver estas inconsistencias, priorizando la coherencia interna del dataset. Entre estas reglas destacan:
 
-la exigencia de unicidad de la unidad analítica; la restricción de valores a rangos válidos; la eliminación o exclusión de categorías no compatibles con la definición operativa final.
+la exigencia de unicidad de la unidad analÃ­tica; la restricciÃ³n de valores a rangos vÃ¡lidos; la eliminaciÃ³n o exclusiÃ³n de categorÃ­as no compatibles con la definiciÃ³n operativa final.
 
-Es importante enfatizar que estas reglas buscan garantizar consistencia estructural y no implican una validación externa de la veracidad de los datos. En este sentido, la “limpieza” de datos debe interpretarse como una estandarización analítica y no como una corrección demográfica.
+Es importante enfatizar que estas reglas buscan garantizar consistencia estructural y no implican una validaciÃ³n externa de la veracidad de los datos. En este sentido, la â€œlimpiezaâ€ de datos debe interpretarse como una estandarizaciÃ³n analÃ­tica y no como una correcciÃ³n demogrÃ¡fica.
 
-4.4 Generación del dataset base
+4.4 GeneraciÃ³n del dataset base
 
 Como resultado de los pasos anteriores, se obtiene un dataset base que contiene:
 
-población por edad simple, sexo, ubicación y año; valores enteros no negativos; ausencia de duplicados en la unidad analítica; cumplimiento de las definiciones operativas establecidas.
+poblaciÃ³n por edad simple, sexo, ubicaciÃ³n y aÃ±o; valores enteros no negativos; ausencia de duplicados en la unidad analÃ­tica; cumplimiento de las definiciones operativas establecidas.
 
-Este dataset constituye la base sobre la cual se aplican transformaciones adicionales, en particular el tratamiento de edades avanzadas y la construcción de agregados nacionales.
+Este dataset constituye la base sobre la cual se aplican transformaciones adicionales, en particular el tratamiento de edades avanzadas y la construcciÃ³n de agregados nacionales.
 
-Desde una perspectiva metodológica, este dataset base representa la traducción de la fuente demográfica original a un “contrato analítico” consistente, que puede ser utilizado de manera directa en modelos epidemiológicos y en cálculos de carga de enfermedad.
+Desde una perspectiva metodolÃ³gica, este dataset base representa la traducciÃ³n de la fuente demogrÃ¡fica original a un â€œcontrato analÃ­ticoâ€ consistente, que puede ser utilizado de manera directa en modelos epidemiolÃ³gicos y en cÃ¡lculos de carga de enfermedad.
 
 ## 5. Tratamiento de edad 
 
 5.1 Uso de edad simple
 
-El método adopta la edad simple (años cumplidos) como unidad fundamental de análisis etario. Esta decisión permite una representación más granular de la estructura poblacional y facilita:
+El mÃ©todo adopta la edad simple (aÃ±os cumplidos) como unidad fundamental de anÃ¡lisis etario. Esta decisiÃ³n permite una representaciÃ³n mÃ¡s granular de la estructura poblacional y facilita:
 
-la construcción de tasas específicas por edad; la agregación flexible hacia grupos etarios (por ejemplo, quinquenales); la compatibilidad con diferentes estándares de estandarización poblacional.
+la construcciÃ³n de tasas especÃ­ficas por edad; la agregaciÃ³n flexible hacia grupos etarios (por ejemplo, quinquenales); la compatibilidad con diferentes estÃ¡ndares de estandarizaciÃ³n poblacional.
 
-El uso de edad simple es coherente con prácticas internacionales en estudios de carga de enfermedad, donde la precisión en la distribución etaria es crítica para estimar correctamente indicadores sensibles a la edad.
+El uso de edad simple es coherente con prÃ¡cticas internacionales en estudios de carga de enfermedad, donde la precisiÃ³n en la distribuciÃ³n etaria es crÃ­tica para estimar correctamente indicadores sensibles a la edad.
 
-Debe hacerse explícito que, aunque las fuentes pueden proporcionar información en grupos de edad agregados, el método transforma dicha información para integrarla en una escala de edad simple, asegurando homogeneidad en todo el dataset.
+Debe hacerse explÃ­cito que, aunque las fuentes pueden proporcionar informaciÃ³n en grupos de edad agregados, el mÃ©todo transforma dicha informaciÃ³n para integrarla en una escala de edad simple, asegurando homogeneidad en todo el dataset.
 
 5.2 Manejo de grupos abiertos
 
-Las fuentes demográficas frecuentemente presentan grupos de edad abiertos en edades avanzadas (por ejemplo, “85 años y más”). Estos grupos no son directamente compatibles con una representación en edad simple, por lo que requieren un tratamiento específico.
+Las fuentes demogrÃ¡ficas frecuentemente presentan grupos de edad abiertos en edades avanzadas (por ejemplo, â€œ85 aÃ±os y mÃ¡sâ€). Estos grupos no son directamente compatibles con una representaciÃ³n en edad simple, por lo que requieren un tratamiento especÃ­fico.
 
-El método considera estos grupos abiertos como insumos informativos sobre la población en edades avanzadas, pero no los utiliza directamente como categorías finales. En cambio, se integran dentro de un proceso posterior de modelamiento que permite distribuir la población en edades específicas más allá del límite inferior del grupo abierto.
+El mÃ©todo considera estos grupos abiertos como insumos informativos sobre la poblaciÃ³n en edades avanzadas, pero no los utiliza directamente como categorÃ­as finales. En cambio, se integran dentro de un proceso posterior de modelamiento que permite distribuir la poblaciÃ³n en edades especÃ­ficas mÃ¡s allÃ¡ del lÃ­mite inferior del grupo abierto.
 
 Este enfoque evita asignaciones arbitrarias dentro del grupo abierto y permite mantener coherencia con la estructura de edad simple adoptada.
 
-5.3 Extensión de la cola etaria
+5.3 ExtensiÃ³n de la cola etaria
 
-Para garantizar una cobertura completa de la distribución poblacional, el método extiende la edad hasta un máximo de 110 años. Esta extensión responde a dos objetivos:
+Para garantizar una cobertura completa de la distribuciÃ³n poblacional, el mÃ©todo extiende la edad hasta un mÃ¡ximo de 110 aÃ±os. Esta extensiÃ³n responde a dos objetivos:
 
-Cierre de la distribución etaria: asegurar que toda la población esté representada dentro de un rango finito y definido. Compatibilidad analítica: facilitar la integración con modelos y métricas que requieren una distribución completa de edades.
+Cierre de la distribuciÃ³n etaria: asegurar que toda la poblaciÃ³n estÃ© representada dentro de un rango finito y definido. Compatibilidad analÃ­tica: facilitar la integraciÃ³n con modelos y mÃ©tricas que requieren una distribuciÃ³n completa de edades.
 
-La extensión de la cola etaria no se basa exclusivamente en datos observados, ya que las fuentes suelen ser menos precisas en edades avanzadas. Por ello, se recurre a un procedimiento de modelamiento descrito en la siguiente sección, que permite estimar la población en edades superiores a las observadas directamente.
+La extensiÃ³n de la cola etaria no se basa exclusivamente en datos observados, ya que las fuentes suelen ser menos precisas en edades avanzadas. Por ello, se recurre a un procedimiento de modelamiento descrito en la siguiente secciÃ³n, que permite estimar la poblaciÃ³n en edades superiores a las observadas directamente.
 
-Debe hacerse explícito que el límite superior de 110 años es una convención operativa y no una afirmación empírica sobre la edad máxima de la población. Asimismo, la distribución en edades avanzadas debe interpretarse con cautela, dado que se apoya en supuestos adicionales y en un proceso de suavización estadística.
+Debe hacerse explÃ­cito que el lÃ­mite superior de 110 aÃ±os es una convenciÃ³n operativa y no una afirmaciÃ³n empÃ­rica sobre la edad mÃ¡xima de la poblaciÃ³n. Asimismo, la distribuciÃ³n en edades avanzadas debe interpretarse con cautela, dado que se apoya en supuestos adicionales y en un proceso de suavizaciÃ³n estadÃ­stica.
 
-En conjunto, el tratamiento de la edad en este método busca equilibrar fidelidad a la fuente, coherencia interna y utilidad analítica, reconociendo las limitaciones inherentes a la información disponible en edades extremas.
+En conjunto, el tratamiento de la edad en este mÃ©todo busca equilibrar fidelidad a la fuente, coherencia interna y utilidad analÃ­tica, reconociendo las limitaciones inherentes a la informaciÃ³n disponible en edades extremas.
 
-## 6. Modelamiento de edades avanzadas (80–110) 
+## 6. Modelamiento de edades avanzadas (80â€“110) 
 
-El tratamiento de las edades avanzadas constituye un componente crítico en la construcción del dataset poblacional, debido a su impacto directo en la estimación de indicadores sensibles a la mortalidad, tales como los años de vida perdidos (AVP) y métricas derivadas de la esperanza de vida.
+El tratamiento de las edades avanzadas constituye un componente crÃ­tico en la construcciÃ³n del dataset poblacional, debido a su impacto directo en la estimaciÃ³n de indicadores sensibles a la mortalidad, tales como los aÃ±os de vida perdidos (AVP) y mÃ©tricas derivadas de la esperanza de vida.
 
 ### 6.1 Tratamiento de edades avanzadas en la fuente (INEI)
 
-En la fuente original, las estimaciones de población por edad simple en edades avanzadas no se derivan únicamente de un proceso de interpolación estándar entre grupos quinquenales, sino que incorporan procedimientos específicos orientados a mantener la coherencia demográfica en estos tramos etarios.
+En la fuente original, las estimaciones de poblaciÃ³n por edad simple en edades avanzadas no se derivan Ãºnicamente de un proceso de interpolaciÃ³n estÃ¡ndar entre grupos quinquenales, sino que incorporan procedimientos especÃ­ficos orientados a mantener la coherencia demogrÃ¡fica en estos tramos etarios.
 
-De acuerdo con la documentación metodológica del INEI, el tratamiento de las edades avanzadas se basa en el uso de relaciones de sobrevivencia derivadas de tablas de mortalidad y, en algunos casos, en tablas modelo de mortalidad, lo que permite distribuir la población en edades altas de manera consistente con patrones demográficos plausibles.
+De acuerdo con la documentaciÃ³n metodolÃ³gica del INEI, el tratamiento de las edades avanzadas se basa en el uso de relaciones de sobrevivencia derivadas de tablas de mortalidad y, en algunos casos, en tablas modelo de mortalidad, lo que permite distribuir la poblaciÃ³n en edades altas de manera consistente con patrones demogrÃ¡ficos plausibles.
 
-Este enfoque reconoce que la simple interpolación puede ser insuficiente en estos rangos de edad, donde la dinámica poblacional está fuertemente influenciada por la mortalidad diferencial y por la disminución progresiva de la población sobreviviente.
+Este enfoque reconoce que la simple interpolaciÃ³n puede ser insuficiente en estos rangos de edad, donde la dinÃ¡mica poblacional estÃ¡ fuertemente influenciada por la mortalidad diferencial y por la disminuciÃ³n progresiva de la poblaciÃ³n sobreviviente.
 
-En consecuencia, las estimaciones del INEI en edades avanzadas ya constituyen una **aproximación modelada**, y no una extensión directa de patrones observados o interpolados de manera uniforme.
+En consecuencia, las estimaciones del INEI en edades avanzadas ya constituyen una **aproximaciÃ³n modelada**, y no una extensiÃ³n directa de patrones observados o interpolados de manera uniforme.
 
-### 6.2 Extensión y transformación en el componente analítico
+### 6.2 ExtensiÃ³n y transformaciÃ³n en el componente analÃ­tico
 
-Sobre esta base, el presente componente introduce un conjunto de transformaciones adicionales orientadas a adaptar la distribución poblacional a los requerimientos del análisis de carga de enfermedad.
+Sobre esta base, el presente componente introduce un conjunto de transformaciones adicionales orientadas a adaptar la distribuciÃ³n poblacional a los requerimientos del anÃ¡lisis de carga de enfermedad.
 
-En particular, se realiza una extensión de la distribución etaria hacia edades más avanzadas (por ejemplo, hasta los 110 años), con el objetivo de:
+En particular, se realiza una extensiÃ³n de la distribuciÃ³n etaria hacia edades mÃ¡s avanzadas (por ejemplo, hasta los 110 aÃ±os), con el objetivo de:
 
--    evitar la truncación de la población en edades altas;
+-    evitar la truncaciÃ³n de la poblaciÃ³n en edades altas;
 
--    permitir la integración con tablas de vida estándar utilizadas en el cálculo de AVP;
+-    permitir la integraciÃ³n con tablas de vida estÃ¡ndar utilizadas en el cÃ¡lculo de AVP;
 
--    garantizar compatibilidad con marcos analíticos internacionales que consideran edades extremas en la distribución poblacional.
+-    garantizar compatibilidad con marcos analÃ­ticos internacionales que consideran edades extremas en la distribuciÃ³n poblacional.
 
-Esta extensión no forma parte de la metodología original del INEI y debe interpretarse como un **modelamiento adicional aplicado sobre una base previamente modelada**.
+Esta extensiÃ³n no forma parte de la metodologÃ­a original del INEI y debe interpretarse como un **modelamiento adicional aplicado sobre una base previamente modelada**.
 
-### 6.3 Supuestos del modelamiento en la cola de la distribución
+### 6.3 Supuestos del modelamiento en la cola de la distribuciÃ³n
 
-La extensión hacia edades avanzadas implica asumir que la estructura de la población en la cola de la distribución puede ser aproximada mediante funciones suaves y monotónicas, consistentes con la disminución esperada de la población sobreviviente.
+La extensiÃ³n hacia edades avanzadas implica asumir que la estructura de la poblaciÃ³n en la cola de la distribuciÃ³n puede ser aproximada mediante funciones suaves y monotÃ³nicas, consistentes con la disminuciÃ³n esperada de la poblaciÃ³n sobreviviente.
 
 En este contexto, se asume que:
 
--    la población decrece de manera progresiva y sin incrementos espurios en edades avanzadas;
+-    la poblaciÃ³n decrece de manera progresiva y sin incrementos espurios en edades avanzadas;
 
--    la forma de la distribución es compatible con patrones de mortalidad crecientes con la edad;
+-    la forma de la distribuciÃ³n es compatible con patrones de mortalidad crecientes con la edad;
 
 -    las transformaciones aplicadas no introducen discontinuidades abruptas respecto a la estructura derivada de la fuente.
 
-Estos supuestos son necesarios para garantizar estabilidad numérica y coherencia analítica, pero no implican que la distribución resultante reproduzca con precisión la dinámica demográfica real en edades extremas.
+Estos supuestos son necesarios para garantizar estabilidad numÃ©rica y coherencia analÃ­tica, pero no implican que la distribuciÃ³n resultante reproduzca con precisiÃ³n la dinÃ¡mica demogrÃ¡fica real en edades extremas.
 
-### 6.4 Implicancias analíticas
+### 6.4 Implicancias analÃ­ticas
 
 El tratamiento de las edades avanzadas tiene implicancias directas en los resultados del estudio, particularmente en:
 
--    la estimación de años de vida perdidos, donde pequeñas variaciones en la población a edades altas pueden traducirse en diferencias relevantes en los resultados agregados;
+-    la estimaciÃ³n de aÃ±os de vida perdidos, donde pequeÃ±as variaciones en la poblaciÃ³n a edades altas pueden traducirse en diferencias relevantes en los resultados agregados;
 
--    la consistencia con tablas de vida estándar, que requieren una distribución poblacional extendida para el cálculo adecuado de la esperanza de vida;
+-    la consistencia con tablas de vida estÃ¡ndar, que requieren una distribuciÃ³n poblacional extendida para el cÃ¡lculo adecuado de la esperanza de vida;
 
 -   la comparabilidad con estudios internacionales, que suelen utilizar estructuras poblacionales completas hasta edades avanzadas.
 
-En este sentido, el modelamiento aplicado busca equilibrar la necesidad de coherencia analítica con el reconocimiento de las limitaciones inherentes a la información disponible.
+En este sentido, el modelamiento aplicado busca equilibrar la necesidad de coherencia analÃ­tica con el reconocimiento de las limitaciones inherentes a la informaciÃ³n disponible.
 
-### 6.5 Consideraciones para la interpretación
+### 6.5 Consideraciones para la interpretaciÃ³n
 
-Dado que la distribución poblacional en edades avanzadas resulta de una combinación de modelamiento en la fuente (INEI) y modelamiento adicional en este componente, se recomienda interpretar con cautela los resultados desagregados en estos rangos etarios.
+Dado que la distribuciÃ³n poblacional en edades avanzadas resulta de una combinaciÃ³n de modelamiento en la fuente (INEI) y modelamiento adicional en este componente, se recomienda interpretar con cautela los resultados desagregados en estos rangos etarios.
 
 En particular:
 
--    la población en edades extremas debe entenderse como una **aproximación analítica**, más que como una estimación empírica directa;
+-    la poblaciÃ³n en edades extremas debe entenderse como una **aproximaciÃ³n analÃ­tica**, mÃ¡s que como una estimaciÃ³n empÃ­rica directa;
 
--    los análisis que dependen críticamente de la estructura poblacional en edades avanzadas deben considerar la posibilidad de realizar evaluaciones de sensibilidad;
+-    los anÃ¡lisis que dependen crÃ­ticamente de la estructura poblacional en edades avanzadas deben considerar la posibilidad de realizar evaluaciones de sensibilidad;
 
--    las comparaciones con otras fuentes poblacionales deben tener en cuenta las diferencias en el tratamiento de la cola de la distribución.
+-    las comparaciones con otras fuentes poblacionales deben tener en cuenta las diferencias en el tratamiento de la cola de la distribuciÃ³n.
 
-## 7. Construcción de agregados poblacionales 
+## 7. ConstrucciÃ³n de agregados poblacionales 
 
-7.1 Definición de población nacional oficial
+7.1 DefiniciÃ³n de poblaciÃ³n nacional oficial
 
-La población nacional oficial se define como el total poblacional del país reportado directamente por la fuente demográfica. Esta medida refleja la estimación institucional del tamaño poblacional nacional para cada año, edad y sexo, y se mantiene en el dataset como referencia primaria.
+La poblaciÃ³n nacional oficial se define como el total poblacional del paÃ­s reportado directamente por la fuente demogrÃ¡fica. Esta medida refleja la estimaciÃ³n institucional del tamaÃ±o poblacional nacional para cada aÃ±o, edad y sexo, y se mantiene en el dataset como referencia primaria.
 
-Metodológicamente, esta definición tiene la ventaja de preservar la fidelidad a la fuente original y garantizar coherencia con otras estadísticas oficiales que utilizan la misma base poblacional.
+MetodolÃ³gicamente, esta definiciÃ³n tiene la ventaja de preservar la fidelidad a la fuente original y garantizar coherencia con otras estadÃ­sticas oficiales que utilizan la misma base poblacional.
 
-Sin embargo, la población nacional oficial no necesariamente coincide con la suma exacta de las poblaciones subnacionales, debido a posibles ajustes internos realizados por la institución productora de datos.
+Sin embargo, la poblaciÃ³n nacional oficial no necesariamente coincide con la suma exacta de las poblaciones subnacionales, debido a posibles ajustes internos realizados por la instituciÃ³n productora de datos.
 
 7.2 Enfoque basado en suma departamental
 
-Con el fin de garantizar consistencia jerárquica, el método incorpora una segunda definición de población nacional, denominada población nacional aditiva. Esta se obtiene como la suma exacta de las poblaciones departamentales para cada combinación de edad, sexo y año:
+Con el fin de garantizar consistencia jerÃ¡rquica, el mÃ©todo incorpora una segunda definiciÃ³n de poblaciÃ³n nacional, denominada poblaciÃ³n nacional aditiva. Esta se obtiene como la suma exacta de las poblaciones departamentales para cada combinaciÃ³n de edad, sexo y aÃ±o:
 
-𝑃 𝑎 , 𝑠 , 𝑡 ( 𝑛 𝑎 𝑡 \_ 𝑎 𝑑 𝑑 ) = ∑ 𝑙 ∈ 𝐿 𝑃 𝑎 , 𝑠 , 𝑙 , 𝑡 P a,s,t (nat_add) ​
+ð‘ƒ ð‘Ž , ð‘  , ð‘¡ ( ð‘› ð‘Ž ð‘¡ \_ ð‘Ž ð‘‘ ð‘‘ ) = âˆ‘ ð‘™ âˆˆ ð¿ ð‘ƒ ð‘Ž , ð‘  , ð‘™ , ð‘¡ P a,s,t (nat_add) â€‹
 
-= l∈L ∑ ​
+= lâˆˆL âˆ‘ â€‹
 
-P a,s,l,t ​
+P a,s,l,t â€‹
 
-donde 𝐿 L representa el conjunto de departamentos.
+donde ð¿ L representa el conjunto de departamentos.
 
-Esta definición asegura que cualquier agregación desde el nivel subnacional reproduzca exactamente el total nacional, lo cual es particularmente importante en análisis que integran múltiples niveles geográficos o que requieren consistencia aritmética estricta.
+Esta definiciÃ³n asegura que cualquier agregaciÃ³n desde el nivel subnacional reproduzca exactamente el total nacional, lo cual es particularmente importante en anÃ¡lisis que integran mÃºltiples niveles geogrÃ¡ficos o que requieren consistencia aritmÃ©tica estricta.
 
-7.3 Comparación con estimaciones oficiales
+7.3 ComparaciÃ³n con estimaciones oficiales
 
-La coexistencia de la población nacional oficial y la población nacional aditiva implica que pueden existir discrepancias entre ambas. Estas diferencias reflejan:
+La coexistencia de la poblaciÃ³n nacional oficial y la poblaciÃ³n nacional aditiva implica que pueden existir discrepancias entre ambas. Estas diferencias reflejan:
 
-ajustes demográficos realizados por la fuente oficial; redondeos o reconciliaciones internas; posibles diferencias en la forma de agregación.
+ajustes demogrÃ¡ficos realizados por la fuente oficial; redondeos o reconciliaciones internas; posibles diferencias en la forma de agregaciÃ³n.
 
-El método no intenta reconciliar estas diferencias mediante ajustes adicionales, sino que las reconoce explícitamente y mantiene ambas definiciones como parte del dataset analítico.
+El mÃ©todo no intenta reconciliar estas diferencias mediante ajustes adicionales, sino que las reconoce explÃ­citamente y mantiene ambas definiciones como parte del dataset analÃ­tico.
 
-Desde una perspectiva metodológica, esta decisión evita introducir supuestos adicionales no verificables y preserva la transparencia del proceso.
+Desde una perspectiva metodolÃ³gica, esta decisiÃ³n evita introducir supuestos adicionales no verificables y preserva la transparencia del proceso.
 
-7.4 Implicancias analíticas
+7.4 Implicancias analÃ­ticas
 
-La existencia de dos definiciones de población nacional tiene implicancias importantes para el análisis:
+La existencia de dos definiciones de poblaciÃ³n nacional tiene implicancias importantes para el anÃ¡lisis:
 
-Elección del denominador: la población nacional oficial es adecuada cuando se busca alineamiento con estadísticas institucionales; la población nacional aditiva es preferible cuando se requiere consistencia exacta con análisis subnacionales. Interpretación de tasas: las tasas calculadas con cada definición pueden diferir ligeramente, especialmente cuando las discrepancias entre ambas poblaciones son relevantes. Consistencia jerárquica: el uso de la población aditiva garantiza que los totales nacionales sean exactamente iguales a la suma de sus componentes, lo cual es crítico en modelos jerárquicos o en validaciones internas.
+ElecciÃ³n del denominador: la poblaciÃ³n nacional oficial es adecuada cuando se busca alineamiento con estadÃ­sticas institucionales; la poblaciÃ³n nacional aditiva es preferible cuando se requiere consistencia exacta con anÃ¡lisis subnacionales. InterpretaciÃ³n de tasas: las tasas calculadas con cada definiciÃ³n pueden diferir ligeramente, especialmente cuando las discrepancias entre ambas poblaciones son relevantes. Consistencia jerÃ¡rquica: el uso de la poblaciÃ³n aditiva garantiza que los totales nacionales sean exactamente iguales a la suma de sus componentes, lo cual es crÃ­tico en modelos jerÃ¡rquicos o en validaciones internas.
 
-Debe hacerse explícito que la elección entre ambas definiciones no es meramente técnica, sino que depende del objetivo analítico. Esta decisión constituye una de las principales convenciones metodológicas del componente y debe ser comunicada claramente a los usuarios del dataset.
+Debe hacerse explÃ­cito que la elecciÃ³n entre ambas definiciones no es meramente tÃ©cnica, sino que depende del objetivo analÃ­tico. Esta decisiÃ³n constituye una de las principales convenciones metodolÃ³gicas del componente y debe ser comunicada claramente a los usuarios del dataset.
 
-## 8. Consistencia interna y coherencia demográfica 
+## 8. Consistencia interna y coherencia demogrÃ¡fica 
 
 8.1 Coherencia por edad
 
-El método incorpora criterios de coherencia interna a lo largo de la dimensión etaria, con el objetivo de asegurar que la distribución de la población sea demográficamente plausible y analíticamente estable.
+El mÃ©todo incorpora criterios de coherencia interna a lo largo de la dimensiÃ³n etaria, con el objetivo de asegurar que la distribuciÃ³n de la poblaciÃ³n sea demogrÃ¡ficamente plausible y analÃ­ticamente estable.
 
 En particular, se espera que:
 
-la población sea no negativa para todas las edades; la transición entre edades consecutivas no presente discontinuidades abruptas no justificadas; en edades avanzadas, la población siga una tendencia no creciente.
+la poblaciÃ³n sea no negativa para todas las edades; la transiciÃ³n entre edades consecutivas no presente discontinuidades abruptas no justificadas; en edades avanzadas, la poblaciÃ³n siga una tendencia no creciente.
 
-La coherencia por edad se garantiza mediante la combinación de datos observados en edades tempranas y medias, junto con el modelamiento en la cola etaria (sección 6), que impone suavidad y monotonicidad.
+La coherencia por edad se garantiza mediante la combinaciÃ³n de datos observados en edades tempranas y medias, junto con el modelamiento en la cola etaria (secciÃ³n 6), que impone suavidad y monotonicidad.
 
-Debe hacerse explícito que este criterio no implica validar la exactitud de la estructura etaria frente a fuentes externas, sino asegurar consistencia interna dentro del dataset analítico.
+Debe hacerse explÃ­cito que este criterio no implica validar la exactitud de la estructura etaria frente a fuentes externas, sino asegurar consistencia interna dentro del dataset analÃ­tico.
 
 8.2 Coherencia por sexo
 
-La coherencia por sexo se refiere a la consistencia de las distribuciones poblacionales entre hombres y mujeres a lo largo de las edades y años.
+La coherencia por sexo se refiere a la consistencia de las distribuciones poblacionales entre hombres y mujeres a lo largo de las edades y aÃ±os.
 
-El método asume que:
+El mÃ©todo asume que:
 
-la suma de las poblaciones por sexo reproduce la población total cuando esta se encuentra disponible; no existen categorías ambiguas o inconsistentes de sexo en el dataset final; las diferencias entre sexos reflejan patrones demográficos plausibles (por ejemplo, mayor supervivencia femenina en edades avanzadas).
+la suma de las poblaciones por sexo reproduce la poblaciÃ³n total cuando esta se encuentra disponible; no existen categorÃ­as ambiguas o inconsistentes de sexo en el dataset final; las diferencias entre sexos reflejan patrones demogrÃ¡ficos plausibles (por ejemplo, mayor supervivencia femenina en edades avanzadas).
 
-No se aplican ajustes explícitos para forzar relaciones esperadas entre sexos (como razones de masculinidad específicas), pero se espera que la fuente original ya incorpore dichas características.
+No se aplican ajustes explÃ­citos para forzar relaciones esperadas entre sexos (como razones de masculinidad especÃ­ficas), pero se espera que la fuente original ya incorpore dichas caracterÃ­sticas.
 
-Debe hacerse explícito que cualquier sesgo o inconsistencia en la distribución por sexo proviene de la fuente de datos y no es corregido en este componente.
+Debe hacerse explÃ­cito que cualquier sesgo o inconsistencia en la distribuciÃ³n por sexo proviene de la fuente de datos y no es corregido en este componente.
 
-8.3 Coherencia geográfica
+8.3 Coherencia geogrÃ¡fica
 
-La coherencia geográfica implica que las poblaciones subnacionales (departamentales) sean consistentes entre sí y con el total nacional, bajo las definiciones establecidas en la sección 7.
+La coherencia geogrÃ¡fica implica que las poblaciones subnacionales (departamentales) sean consistentes entre sÃ­ y con el total nacional, bajo las definiciones establecidas en la secciÃ³n 7.
 
-El método garantiza:
+El mÃ©todo garantiza:
 
-que cada unidad geográfica esté definida de manera única y consistente en el tiempo; que no existan solapamientos entre unidades; que la suma de unidades subnacionales sea interpretable como un agregado válido.
+que cada unidad geogrÃ¡fica estÃ© definida de manera Ãºnica y consistente en el tiempo; que no existan solapamientos entre unidades; que la suma de unidades subnacionales sea interpretable como un agregado vÃ¡lido.
 
-Sin embargo, dado que se mantienen dos definiciones de población nacional (oficial y aditiva), la coherencia geográfica puede depender de la elección del denominador. La coherencia estricta (aditiva) se garantiza únicamente cuando se utiliza la población nacional derivada de la suma de departamentos.
+Sin embargo, dado que se mantienen dos definiciones de poblaciÃ³n nacional (oficial y aditiva), la coherencia geogrÃ¡fica puede depender de la elecciÃ³n del denominador. La coherencia estricta (aditiva) se garantiza Ãºnicamente cuando se utiliza la poblaciÃ³n nacional derivada de la suma de departamentos.
 
-Debe hacerse explícito que no se realizan ajustes de reconciliación espacial adicionales (por ejemplo, redistribución proporcional), lo que implica que las discrepancias observadas reflejan directamente la estructura de la fuente.
+Debe hacerse explÃ­cito que no se realizan ajustes de reconciliaciÃ³n espacial adicionales (por ejemplo, redistribuciÃ³n proporcional), lo que implica que las discrepancias observadas reflejan directamente la estructura de la fuente.
 
-8.4 Consistencia jerárquica
+8.4 Consistencia jerÃ¡rquica
 
-La consistencia jerárquica se refiere a la relación entre diferentes niveles de agregación (edad, sexo, ubicación) y a la capacidad del dataset de mantener identidades contables entre ellos.
+La consistencia jerÃ¡rquica se refiere a la relaciÃ³n entre diferentes niveles de agregaciÃ³n (edad, sexo, ubicaciÃ³n) y a la capacidad del dataset de mantener identidades contables entre ellos.
 
-Formalmente, para cualquier nivel de agregación válido, se espera que:
+Formalmente, para cualquier nivel de agregaciÃ³n vÃ¡lido, se espera que:
 
-∑ 𝑎 ∈ 𝐴 𝑃 𝑎 , 𝑠 , 𝑙 , 𝑡 = 𝑃 𝑠 , 𝑙 , 𝑡 , ∑ 𝑠 ∈ 𝑆 𝑃 𝑎 , 𝑠 , 𝑙 , 𝑡 = 𝑃 𝑎 , 𝑙 , 𝑡 , ∑ 𝑙 ∈ 𝐿 𝑃 𝑎 , 𝑠 , 𝑙 , 𝑡 = 𝑃 𝑎 , 𝑠 , 𝑡 ( 𝑛 𝑎 𝑡 \_ 𝑎 𝑑 𝑑 ) a∈A ∑ ​
+âˆ‘ ð‘Ž âˆˆ ð´ ð‘ƒ ð‘Ž , ð‘  , ð‘™ , ð‘¡ = ð‘ƒ ð‘  , ð‘™ , ð‘¡ , âˆ‘ ð‘  âˆˆ ð‘† ð‘ƒ ð‘Ž , ð‘  , ð‘™ , ð‘¡ = ð‘ƒ ð‘Ž , ð‘™ , ð‘¡ , âˆ‘ ð‘™ âˆˆ ð¿ ð‘ƒ ð‘Ž , ð‘  , ð‘™ , ð‘¡ = ð‘ƒ ð‘Ž , ð‘  , ð‘¡ ( ð‘› ð‘Ž ð‘¡ \_ ð‘Ž ð‘‘ ð‘‘ ) aâˆˆA âˆ‘ â€‹
 
-P a,s,l,t ​
+P a,s,l,t â€‹
 
-=P s,l,t ​
+=P s,l,t â€‹
 
-, s∈S ∑ ​
+, sâˆˆS âˆ‘ â€‹
 
-P a,s,l,t ​
+P a,s,l,t â€‹
 
-=P a,l,t ​
+=P a,l,t â€‹
 
-, l∈L ∑ ​
+, lâˆˆL âˆ‘ â€‹
 
-P a,s,l,t ​
+P a,s,l,t â€‹
 
-=P a,s,t (nat_add) ​
+=P a,s,t (nat_add) â€‹
 
-donde 𝐴 A, 𝑆 S y 𝐿 L representan los conjuntos de edades, sexos y ubicaciones, respectivamente.
+donde ð´ A, ð‘† S y ð¿ L representan los conjuntos de edades, sexos y ubicaciones, respectivamente.
 
-Estas identidades se cumplen estrictamente en el dataset analítico, al menos bajo la definición aditiva de población nacional. Esto permite:
+Estas identidades se cumplen estrictamente en el dataset analÃ­tico, al menos bajo la definiciÃ³n aditiva de poblaciÃ³n nacional. Esto permite:
 
-realizar agregaciones y desagregaciones sin pérdida de coherencia; integrar el componente demográfico en modelos jerárquicos; validar resultados intermedios en el pipeline de carga de enfermedad.
+realizar agregaciones y desagregaciones sin pÃ©rdida de coherencia; integrar el componente demogrÃ¡fico en modelos jerÃ¡rquicos; validar resultados intermedios en el pipeline de carga de enfermedad.
 
-Debe hacerse explícito que la consistencia jerárquica es una propiedad construida del dataset analítico y no necesariamente una característica de la fuente original.
+Debe hacerse explÃ­cito que la consistencia jerÃ¡rquica es una propiedad construida del dataset analÃ­tico y no necesariamente una caracterÃ­stica de la fuente original.
 
-## 9. Supuestos del método 
+## 9. Supuestos del mÃ©todo 
 
-El componente demográfico utilizado en este estudio se sustenta en un conjunto de supuestos que provienen de distintos niveles del proceso de generación y uso de la información. Para efectos de transparencia metodológica, estos supuestos se organizan en tres categorías: (i) supuestos inherentes a la fuente (INEI), (ii) supuestos asociados a su uso en este componente, y (iii) supuestos derivados del modelamiento adicional implementado.
+El componente demogrÃ¡fico utilizado en este estudio se sustenta en un conjunto de supuestos que provienen de distintos niveles del proceso de generaciÃ³n y uso de la informaciÃ³n. Para efectos de transparencia metodolÃ³gica, estos supuestos se organizan en tres categorÃ­as: (i) supuestos inherentes a la fuente (INEI), (ii) supuestos asociados a su uso en este componente, y (iii) supuestos derivados del modelamiento adicional implementado.
 
 ### 9.1 Supuestos inherentes a la fuente (INEI)
 
-Las estimaciones de población por edad simple utilizadas en este estudio derivan de un proceso de desagregación de proyecciones por grupos quinquenales de edad, basado en métodos de interpolación estructurada. En este contexto, se asume que:
+Las estimaciones de poblaciÃ³n por edad simple utilizadas en este estudio derivan de un proceso de desagregaciÃ³n de proyecciones por grupos quinquenales de edad, basado en mÃ©todos de interpolaciÃ³n estructurada. En este contexto, se asume que:
 
--    la descomposición de grupos quinquenales en edades simples mediante técnicas como los multiplicadores de Sprague proporciona una aproximación adecuada de la distribución etaria subyacente;
+-    la descomposiciÃ³n de grupos quinquenales en edades simples mediante tÃ©cnicas como los multiplicadores de Sprague proporciona una aproximaciÃ³n adecuada de la distribuciÃ³n etaria subyacente;
 
--    la estructura poblacional entre grupos quinquenales adyacentes es suficientemente suave como para permitir su interpolación sin introducir distorsiones sustantivas;
+-    la estructura poblacional entre grupos quinquenales adyacentes es suficientemente suave como para permitir su interpolaciÃ³n sin introducir distorsiones sustantivas;
 
--    los procedimientos diferenciados aplicados a grupos extremos de edad (0–4 años y edades avanzadas), que incorporan relaciones de sobrevivencia derivadas de tablas de mortalidad y tablas modelo, representan razonablemente la dinámica demográfica en dichos tramos etarios;
+-    los procedimientos diferenciados aplicados a grupos extremos de edad (0â€“4 aÃ±os y edades avanzadas), que incorporan relaciones de sobrevivencia derivadas de tablas de mortalidad y tablas modelo, representan razonablemente la dinÃ¡mica demogrÃ¡fica en dichos tramos etarios;
 
--    las proyecciones por grupos quinquenales que sirven como base del proceso constituyen una representación válida de la evolución poblacional a nivel departamental.
+-    las proyecciones por grupos quinquenales que sirven como base del proceso constituyen una representaciÃ³n vÃ¡lida de la evoluciÃ³n poblacional a nivel departamental.
 
-Estos supuestos no son introducidos por el presente estudio, sino que forman parte del marco metodológico bajo el cual el INEI genera las estimaciones utilizadas como insumo.
+Estos supuestos no son introducidos por el presente estudio, sino que forman parte del marco metodolÃ³gico bajo el cual el INEI genera las estimaciones utilizadas como insumo.
 
 ### 9.2 Supuestos asociados al uso en el componente
 
-En la integración de la información del INEI dentro del presente componente demográfico, se asume que:
+En la integraciÃ³n de la informaciÃ³n del INEI dentro del presente componente demogrÃ¡fico, se asume que:
 
--    las estimaciones oficiales por edad simple constituyen una base adecuada para la construcción de denominadores poblacionales en análisis epidemiológicos;
+-    las estimaciones oficiales por edad simple constituyen una base adecuada para la construcciÃ³n de denominadores poblacionales en anÃ¡lisis epidemiolÃ³gicos;
 
--    el uso de los cuadros estadísticos y archivos en formato Excel publicados por el INEI preserva la integridad de la información original;
+-    el uso de los cuadros estadÃ­sticos y archivos en formato Excel publicados por el INEI preserva la integridad de la informaciÃ³n original;
 
--    no es necesario reproducir la metodología demográfica completa de proyección poblacional para los fines analíticos del estudio, dado que el objetivo principal es la construcción de un dataset consistente y utilizable dentro del pipeline de carga de enfermedad;
+-    no es necesario reproducir la metodologÃ­a demogrÃ¡fica completa de proyecciÃ³n poblacional para los fines analÃ­ticos del estudio, dado que el objetivo principal es la construcciÃ³n de un dataset consistente y utilizable dentro del pipeline de carga de enfermedad;
 
--    las posibles inconsistencias menores derivadas del proceso de desagregación no afectan de manera sustantiva los resultados a nivel agregado, especialmente cuando se utilizan estructuras poblacionales coherentes y aditivas.
+-    las posibles inconsistencias menores derivadas del proceso de desagregaciÃ³n no afectan de manera sustantiva los resultados a nivel agregado, especialmente cuando se utilizan estructuras poblacionales coherentes y aditivas.
 
--    Estos supuestos reflejan decisiones metodológicas orientadas a la viabilidad operativa y a la consistencia interna del análisis.
+-    Estos supuestos reflejan decisiones metodolÃ³gicas orientadas a la viabilidad operativa y a la consistencia interna del anÃ¡lisis.
 
 ### 9.3 Supuestos derivados del modelamiento adicional
 
-El proceso de construcción del dataset poblacional incluye transformaciones adicionales que introducen supuestos propios del presente componente. Entre ellos se incluyen:
+El proceso de construcciÃ³n del dataset poblacional incluye transformaciones adicionales que introducen supuestos propios del presente componente. Entre ellos se incluyen:
 
--    la extensión de la distribución etaria hasta edades avanzadas (por ejemplo, hasta 110 años), asumiendo que la estructura resultante constituye una aproximación razonable de la cola de la distribución poblacional;
+-    la extensiÃ³n de la distribuciÃ³n etaria hasta edades avanzadas (por ejemplo, hasta 110 aÃ±os), asumiendo que la estructura resultante constituye una aproximaciÃ³n razonable de la cola de la distribuciÃ³n poblacional;
 
--    la aplicación de reglas de coherencia interna (como monotonicidad en edades avanzadas o consistencia entre niveles geográficos), asumiendo que estas restricciones mejoran la estabilidad analítica sin distorsionar significativamente la estructura poblacional;
+-    la aplicaciÃ³n de reglas de coherencia interna (como monotonicidad en edades avanzadas o consistencia entre niveles geogrÃ¡ficos), asumiendo que estas restricciones mejoran la estabilidad analÃ­tica sin distorsionar significativamente la estructura poblacional;
 
--    la definición de una población nacional aditiva, en la que la suma de las poblaciones subnacionales coincide exactamente con el total nacional, asumiendo que esta propiedad es deseable para garantizar consistencia en la agregación de indicadores.
+-    la definiciÃ³n de una poblaciÃ³n nacional aditiva, en la que la suma de las poblaciones subnacionales coincide exactamente con el total nacional, asumiendo que esta propiedad es deseable para garantizar consistencia en la agregaciÃ³n de indicadores.
 
--    Estos supuestos son específicos del presente estudio y deben ser considerados en la interpretación de los resultados, particularmente en análisis sensibles a la distribución etaria en edades extremas.
+-    Estos supuestos son especÃ­ficos del presente estudio y deben ser considerados en la interpretaciÃ³n de los resultados, particularmente en anÃ¡lisis sensibles a la distribuciÃ³n etaria en edades extremas.
 
 ## 10. Limitaciones 
 
-Las estimaciones poblacionales utilizadas en este estudio presentan limitaciones que deben ser consideradas en la interpretación de los resultados. Al igual que en la sección de supuestos, estas limitaciones se organizan según su origen: (i) limitaciones de la fuente, (ii) limitaciones asociadas a su uso en el componente, y (iii) limitaciones derivadas del modelamiento adicional.
+Las estimaciones poblacionales utilizadas en este estudio presentan limitaciones que deben ser consideradas en la interpretaciÃ³n de los resultados. Al igual que en la secciÃ³n de supuestos, estas limitaciones se organizan segÃºn su origen: (i) limitaciones de la fuente, (ii) limitaciones asociadas a su uso en el componente, y (iii) limitaciones derivadas del modelamiento adicional.
 
 ### 10.1 Limitaciones de la fuente (INEI)
 
-Las estimaciones de población por edad simple del INEI se obtienen mediante un proceso de desagregación matemática aplicado a proyecciones por grupos quinquenales de edad. En este sentido, presentan las siguientes limitaciones inherentes:
+Las estimaciones de poblaciÃ³n por edad simple del INEI se obtienen mediante un proceso de desagregaciÃ³n matemÃ¡tica aplicado a proyecciones por grupos quinquenales de edad. En este sentido, presentan las siguientes limitaciones inherentes:
 
--    corresponden a una solución basada fundamentalmente en métodos de interpolación, y no a una proyección demográfica completa construida directamente a nivel de edad simple;
+-    corresponden a una soluciÃ³n basada fundamentalmente en mÃ©todos de interpolaciÃ³n, y no a una proyecciÃ³n demogrÃ¡fica completa construida directamente a nivel de edad simple;
 
--    dependen de la calidad y supuestos de las proyecciones quinquenales subyacentes, incluyendo las estimaciones de fecundidad, mortalidad y migración utilizadas en su elaboración;
+-    dependen de la calidad y supuestos de las proyecciones quinquenales subyacentes, incluyendo las estimaciones de fecundidad, mortalidad y migraciÃ³n utilizadas en su elaboraciÃ³n;
 
--    pueden presentar inconsistencias o artefactos en la distribución por edad, especialmente en los extremos etarios, donde se aplican procedimientos específicos basados en relaciones de sobrevivencia y tablas modelo;
+-    pueden presentar inconsistencias o artefactos en la distribuciÃ³n por edad, especialmente en los extremos etarios, donde se aplican procedimientos especÃ­ficos basados en relaciones de sobrevivencia y tablas modelo;
 
--    no incorporan una cuantificación explícita de la incertidumbre asociada a las estimaciones.
+-    no incorporan una cuantificaciÃ³n explÃ­cita de la incertidumbre asociada a las estimaciones.
 
 Estas limitaciones forman parte de la naturaleza de la fuente y no son modificadas por el presente estudio.
 
@@ -638,248 +649,475 @@ Estas limitaciones forman parte de la naturaleza de la fuente y no son modificad
 
 El uso de las estimaciones del INEI como insumo en este componente introduce limitaciones adicionales:
 
--    el componente no reproduce ni ajusta explícitamente los procesos demográficos subyacentes (fecundidad, mortalidad, migración), por lo que hereda posibles sesgos presentes en la fuente original;
+-    el componente no reproduce ni ajusta explÃ­citamente los procesos demogrÃ¡ficos subyacentes (fecundidad, mortalidad, migraciÃ³n), por lo que hereda posibles sesgos presentes en la fuente original;
 
--    no se implementan procedimientos formales de validación externa frente a otras fuentes demográficas, lo que limita la evaluación de consistencia entre distintas estimaciones poblacionales;
+-    no se implementan procedimientos formales de validaciÃ³n externa frente a otras fuentes demogrÃ¡ficas, lo que limita la evaluaciÃ³n de consistencia entre distintas estimaciones poblacionales;
 
--    no se incorpora una estimación explícita de la incertidumbre, lo que restringe la posibilidad de realizar análisis probabilísticos o de sensibilidad basados en el componente demográfico.
+-    no se incorpora una estimaciÃ³n explÃ­cita de la incertidumbre, lo que restringe la posibilidad de realizar anÃ¡lisis probabilÃ­sticos o de sensibilidad basados en el componente demogrÃ¡fico.
 
-Estas limitaciones responden a la decisión de utilizar la información disponible de manera directa, priorizando consistencia interna y reproducibilidad.
+Estas limitaciones responden a la decisiÃ³n de utilizar la informaciÃ³n disponible de manera directa, priorizando consistencia interna y reproducibilidad.
 
 ### 10.3 Limitaciones derivadas del modelamiento adicional
 
 El modelamiento adicional aplicado en el presente componente introduce limitaciones propias, entre las que destacan:
 
--    la extensión de la población a edades avanzadas más allá de las observadas o estimadas directamente en la fuente puede generar estructuras que no reflejan con precisión la dinámica demográfica real en la cola de la distribución;
+-    la extensiÃ³n de la poblaciÃ³n a edades avanzadas mÃ¡s allÃ¡ de las observadas o estimadas directamente en la fuente puede generar estructuras que no reflejan con precisiÃ³n la dinÃ¡mica demogrÃ¡fica real en la cola de la distribuciÃ³n;
 
--    la imposición de restricciones de coherencia interna puede suavizar o modificar patrones específicos de la distribución etaria, particularmente en contextos donde existen irregularidades en la fuente;
+-    la imposiciÃ³n de restricciones de coherencia interna puede suavizar o modificar patrones especÃ­ficos de la distribuciÃ³n etaria, particularmente en contextos donde existen irregularidades en la fuente;
 
--   la definición de una población aditiva puede generar discrepancias respecto a otras estimaciones oficiales que no cumplen estrictamente esta propiedad.
+-   la definiciÃ³n de una poblaciÃ³n aditiva puede generar discrepancias respecto a otras estimaciones oficiales que no cumplen estrictamente esta propiedad.
 
-Estas limitaciones son el resultado de decisiones metodológicas orientadas a mejorar la utilidad analítica del dataset, y deben ser consideradas especialmente en análisis desagregados por edad avanzada o en comparaciones con otras fuentes poblacionales.
+Estas limitaciones son el resultado de decisiones metodolÃ³gicas orientadas a mejorar la utilidad analÃ­tica del dataset, y deben ser consideradas especialmente en anÃ¡lisis desagregados por edad avanzada o en comparaciones con otras fuentes poblacionales.
 
 ## 11. Fortalezas del enfoque 
 
 11.1 Reproducibilidad
 
-El enfoque adoptado se caracteriza por una alta reproducibilidad, en tanto define de manera explícita las reglas de transformación, armonización y modelamiento que permiten construir el dataset poblacional. Cada etapa del proceso está basada en criterios sistemáticos y replicables, lo que facilita su aplicación consistente en distintos periodos, regiones o actualizaciones de datos.
+El enfoque adoptado se caracteriza por una alta reproducibilidad, en tanto define de manera explÃ­cita las reglas de transformaciÃ³n, armonizaciÃ³n y modelamiento que permiten construir el dataset poblacional. Cada etapa del proceso estÃ¡ basada en criterios sistemÃ¡ticos y replicables, lo que facilita su aplicaciÃ³n consistente en distintos periodos, regiones o actualizaciones de datos.
 
-Desde una perspectiva metodológica, esta reproducibilidad permite que los resultados puedan ser auditados, verificados y extendidos, lo cual es esencial en estudios de carga de enfermedad que requieren transparencia y trazabilidad.
+Desde una perspectiva metodolÃ³gica, esta reproducibilidad permite que los resultados puedan ser auditados, verificados y extendidos, lo cual es esencial en estudios de carga de enfermedad que requieren transparencia y trazabilidad.
 
 11.2 Coherencia interna
 
-El método asegura un alto grado de coherencia interna en el dataset resultante. La definición estricta de la unidad analítica, la eliminación de inconsistencias estructurales y la imposición de propiedades como la monotonicidad en edades avanzadas contribuyen a generar una base poblacional estable y consistente.
+El mÃ©todo asegura un alto grado de coherencia interna en el dataset resultante. La definiciÃ³n estricta de la unidad analÃ­tica, la eliminaciÃ³n de inconsistencias estructurales y la imposiciÃ³n de propiedades como la monotonicidad en edades avanzadas contribuyen a generar una base poblacional estable y consistente.
 
-La incorporación de una definición aditiva de la población nacional permite, además, garantizar consistencia jerárquica entre niveles geográficos, lo cual es particularmente relevante en análisis que combinan estimaciones subnacionales y nacionales.
+La incorporaciÃ³n de una definiciÃ³n aditiva de la poblaciÃ³n nacional permite, ademÃ¡s, garantizar consistencia jerÃ¡rquica entre niveles geogrÃ¡ficos, lo cual es particularmente relevante en anÃ¡lisis que combinan estimaciones subnacionales y nacionales.
 
-Esta coherencia interna reduce la probabilidad de errores analíticos derivados de inconsistencias en los denominadores poblacionales y mejora la estabilidad de los modelos epidemiológicos que utilizan esta información.
+Esta coherencia interna reduce la probabilidad de errores analÃ­ticos derivados de inconsistencias en los denominadores poblacionales y mejora la estabilidad de los modelos epidemiolÃ³gicos que utilizan esta informaciÃ³n.
 
-11.3 Escalabilidad y compatibilidad analítica
+11.3 Escalabilidad y compatibilidad analÃ­tica
 
-El uso de edad simple como unidad fundamental y la estandarización de variables clave permiten una alta flexibilidad analítica. El dataset puede ser fácilmente agregado o desagregado según las necesidades del análisis, facilitando su integración en diferentes etapas del pipeline de carga de enfermedad.
+El uso de edad simple como unidad fundamental y la estandarizaciÃ³n de variables clave permiten una alta flexibilidad analÃ­tica. El dataset puede ser fÃ¡cilmente agregado o desagregado segÃºn las necesidades del anÃ¡lisis, facilitando su integraciÃ³n en diferentes etapas del pipeline de carga de enfermedad.
 
-Asimismo, la extensión de la distribución etaria hasta 110 años garantiza compatibilidad con una amplia gama de métricas epidemiológicas, incluyendo aquellas que requieren una cobertura completa de la población.
+Asimismo, la extensiÃ³n de la distribuciÃ³n etaria hasta 110 aÃ±os garantiza compatibilidad con una amplia gama de mÃ©tricas epidemiolÃ³gicas, incluyendo aquellas que requieren una cobertura completa de la poblaciÃ³n.
 
-El carácter modular del componente demográfico permite su reutilización en distintos contextos analíticos, manteniendo independencia respecto a los modelos epidemiológicos específicos. Esta característica es especialmente valiosa en entornos donde se desarrollan múltiples análisis sobre una misma base poblacional.
+El carÃ¡cter modular del componente demogrÃ¡fico permite su reutilizaciÃ³n en distintos contextos analÃ­ticos, manteniendo independencia respecto a los modelos epidemiolÃ³gicos especÃ­ficos. Esta caracterÃ­stica es especialmente valiosa en entornos donde se desarrollan mÃºltiples anÃ¡lisis sobre una misma base poblacional.
 
-En conjunto, estas fortalezas posicionan al método como una solución robusta y pragmática para la construcción de denominadores poblacionales en estudios de carga de enfermedad, equilibrando rigor metodológico, transparencia y viabilidad operativa.
+En conjunto, estas fortalezas posicionan al mÃ©todo como una soluciÃ³n robusta y pragmÃ¡tica para la construcciÃ³n de denominadores poblacionales en estudios de carga de enfermedad, equilibrando rigor metodolÃ³gico, transparencia y viabilidad operativa.
 
 ## 12. Uso en el pipeline de carga de enfermedad 
 
-12.1 Uso en tasas epidemiológicas
+12.1 Uso en tasas epidemiolÃ³gicas
 
-El dataset poblacional construido constituye el denominador fundamental para el cálculo de tasas epidemiológicas, incluyendo incidencia, prevalencia y mortalidad. En este contexto, la precisión y coherencia de la distribución poblacional por edad, sexo, ubicación y año son determinantes para la validez de las estimaciones.
+El dataset poblacional construido constituye el denominador fundamental para el cÃ¡lculo de tasas epidemiolÃ³gicas, incluyendo incidencia, prevalencia y mortalidad. En este contexto, la precisiÃ³n y coherencia de la distribuciÃ³n poblacional por edad, sexo, ubicaciÃ³n y aÃ±o son determinantes para la validez de las estimaciones.
 
-Formalmente, para un evento de salud 𝐸 E, la tasa específica se define como:
+Formalmente, para un evento de salud ð¸ E, la tasa especÃ­fica se define como:
 
-Tasa 𝑎 , 𝑠 , 𝑙 , 𝑡 = 𝐸 𝑎 , 𝑠 , 𝑙 , 𝑡 𝑃 𝑎 , 𝑠 , 𝑙 , 𝑡 Tasa a,s,l,t ​
+Tasa ð‘Ž , ð‘  , ð‘™ , ð‘¡ = ð¸ ð‘Ž , ð‘  , ð‘™ , ð‘¡ ð‘ƒ ð‘Ž , ð‘  , ð‘™ , ð‘¡ Tasa a,s,l,t â€‹
 
-= P a,s,l,t ​
+= P a,s,l,t â€‹
 
-E a,s,l,t ​
+E a,s,l,t â€‹
 
 ```         
-​
+â€‹
 ```
 
-donde 𝑃 𝑎 , 𝑠 , 𝑙 , 𝑡 P a,s,l,t ​
+donde ð‘ƒ ð‘Ž , ð‘  , ð‘™ , ð‘¡ P a,s,l,t â€‹
 
-corresponde a la población estimada en la unidad analítica definida.
+corresponde a la poblaciÃ³n estimada en la unidad analÃ­tica definida.
 
-El uso de edad simple permite una mayor precisión en la estimación de tasas específicas y evita los sesgos que pueden surgir al trabajar con grupos etarios amplios. Asimismo, la coherencia interna del dataset garantiza que las tasas agregadas sean consistentes con sus componentes, siempre que se utilice la definición aditiva de población cuando se requiera consistencia jerárquica.
+El uso de edad simple permite una mayor precisiÃ³n en la estimaciÃ³n de tasas especÃ­ficas y evita los sesgos que pueden surgir al trabajar con grupos etarios amplios. Asimismo, la coherencia interna del dataset garantiza que las tasas agregadas sean consistentes con sus componentes, siempre que se utilice la definiciÃ³n aditiva de poblaciÃ³n cuando se requiera consistencia jerÃ¡rquica.
 
-Debe hacerse explícito que la elección entre población nacional oficial y población aditiva puede afectar el valor de las tasas agregadas, especialmente en análisis a nivel nacional, por lo que esta decisión debe alinearse con el objetivo del estudio.
+Debe hacerse explÃ­cito que la elecciÃ³n entre poblaciÃ³n nacional oficial y poblaciÃ³n aditiva puede afectar el valor de las tasas agregadas, especialmente en anÃ¡lisis a nivel nacional, por lo que esta decisiÃ³n debe alinearse con el objetivo del estudio.
 
-12.2 Uso en años de vida perdidos (AVP)
+12.2 Uso en aÃ±os de vida perdidos (AVP)
 
-En el cálculo de los Años de Vida Perdidos (AVP), la población cumple un rol indirecto pero esencial, ya que define la estructura sobre la cual se distribuyen las muertes y permite calcular tasas específicas que son posteriormente utilizadas en análisis comparativos.
+En el cÃ¡lculo de los AÃ±os de Vida Perdidos (AVP), la poblaciÃ³n cumple un rol indirecto pero esencial, ya que define la estructura sobre la cual se distribuyen las muertes y permite calcular tasas especÃ­ficas que son posteriormente utilizadas en anÃ¡lisis comparativos.
 
-Si bien la fórmula básica de AVP se basa en el número de muertes y la esperanza de vida restante, la población es necesaria para:
+Si bien la fÃ³rmula bÃ¡sica de AVP se basa en el nÃºmero de muertes y la esperanza de vida restante, la poblaciÃ³n es necesaria para:
 
-calcular tasas de mortalidad por edad, sexo y ubicación; estandarizar comparaciones entre poblaciones; evaluar la consistencia entre la distribución de muertes y la estructura poblacional.
+calcular tasas de mortalidad por edad, sexo y ubicaciÃ³n; estandarizar comparaciones entre poblaciones; evaluar la consistencia entre la distribuciÃ³n de muertes y la estructura poblacional.
 
-La extensión de la cola etaria hasta 110 años es particularmente relevante en este contexto, dado que permite asignar correctamente las muertes en edades avanzadas y evitar truncamientos artificiales en el cálculo de AVP.
+La extensiÃ³n de la cola etaria hasta 110 aÃ±os es particularmente relevante en este contexto, dado que permite asignar correctamente las muertes en edades avanzadas y evitar truncamientos artificiales en el cÃ¡lculo de AVP.
 
-12.3 Uso en años de vida ajustados por discapacidad (AVISA)
+12.3 Uso en aÃ±os de vida ajustados por discapacidad (AVISA)
 
-En el cálculo de los Años de Vida Ajustados por Discapacidad (AVISA), la población juega un rol central como denominador en la estimación de prevalencia e incidencia, así como en la agregación de resultados.
+En el cÃ¡lculo de los AÃ±os de Vida Ajustados por Discapacidad (AVISA), la poblaciÃ³n juega un rol central como denominador en la estimaciÃ³n de prevalencia e incidencia, asÃ­ como en la agregaciÃ³n de resultados.
 
-Los AVISA combinan los AVP con los Años Vividos con Discapacidad (AVD), estos últimos derivados de la prevalencia de condiciones de salud y de los pesos de discapacidad. En este proceso, la población es utilizada para:
+Los AVISA combinan los AVP con los AÃ±os Vividos con Discapacidad (AVD), estos Ãºltimos derivados de la prevalencia de condiciones de salud y de los pesos de discapacidad. En este proceso, la poblaciÃ³n es utilizada para:
 
-estimar la prevalencia a partir de conteos o tasas; convertir tasas en números absolutos de casos; agregar resultados a distintos niveles geográficos o temporales.
+estimar la prevalencia a partir de conteos o tasas; convertir tasas en nÃºmeros absolutos de casos; agregar resultados a distintos niveles geogrÃ¡ficos o temporales.
 
-La consistencia interna del dataset poblacional es crítica para evitar incoherencias en la suma de AVISA entre niveles de agregación. En particular, el uso de una población aditiva garantiza que los AVISA subnacionales sumen exactamente al total nacional, lo cual es deseable en análisis jerárquicos.
+La consistencia interna del dataset poblacional es crÃ­tica para evitar incoherencias en la suma de AVISA entre niveles de agregaciÃ³n. En particular, el uso de una poblaciÃ³n aditiva garantiza que los AVISA subnacionales sumen exactamente al total nacional, lo cual es deseable en anÃ¡lisis jerÃ¡rquicos.
 
-12.4 Consideraciones analíticas
+12.4 Consideraciones analÃ­ticas
 
-El uso del componente demográfico en el pipeline de carga de enfermedad requiere decisiones analíticas explícitas que pueden influir en los resultados. Entre estas decisiones destacan:
+El uso del componente demogrÃ¡fico en el pipeline de carga de enfermedad requiere decisiones analÃ­ticas explÃ­citas que pueden influir en los resultados. Entre estas decisiones destacan:
 
-la selección de la definición de población nacional (oficial o aditiva); el nivel de agregación etaria utilizado en los análisis; la interpretación de estimaciones en edades avanzadas, donde la población ha sido modelada.
+la selecciÃ³n de la definiciÃ³n de poblaciÃ³n nacional (oficial o aditiva); el nivel de agregaciÃ³n etaria utilizado en los anÃ¡lisis; la interpretaciÃ³n de estimaciones en edades avanzadas, donde la poblaciÃ³n ha sido modelada.
 
-Debe enfatizarse que el componente demográfico se concibe como un insumo estructural, cuya función es proporcionar denominadores consistentes y comparables. No obstante, su interacción con los componentes epidemiológicos puede amplificar o atenuar ciertos patrones, especialmente en contextos donde la distribución etaria es altamente heterogénea.
+Debe enfatizarse que el componente demogrÃ¡fico se concibe como un insumo estructural, cuya funciÃ³n es proporcionar denominadores consistentes y comparables. No obstante, su interacciÃ³n con los componentes epidemiolÃ³gicos puede amplificar o atenuar ciertos patrones, especialmente en contextos donde la distribuciÃ³n etaria es altamente heterogÃ©nea.
 
-En consecuencia, la interpretación de resultados derivados del pipeline debe considerar tanto las propiedades del componente demográfico como las características de los datos epidemiológicos utilizados.
+En consecuencia, la interpretaciÃ³n de resultados derivados del pipeline debe considerar tanto las propiedades del componente demogrÃ¡fico como las caracterÃ­sticas de los datos epidemiolÃ³gicos utilizados.
 
-## 13. Interpretación de resultados 
+## 13. InterpretaciÃ³n de resultados 
 
-13.1 Qué representa la población estimada
+13.1 QuÃ© representa la poblaciÃ³n estimada
 
-La población estimada en este componente debe interpretarse como una representación estructurada y estandarizada del tamaño y distribución de la población, basada en la mejor información disponible de la fuente oficial y ajustada para su uso analítico.
+La poblaciÃ³n estimada en este componente debe interpretarse como una representaciÃ³n estructurada y estandarizada del tamaÃ±o y distribuciÃ³n de la poblaciÃ³n, basada en la mejor informaciÃ³n disponible de la fuente oficial y ajustada para su uso analÃ­tico.
 
-Esta representación captura la distribución por edad, sexo, ubicación y año de manera coherente y continua, incluyendo una extensión de la cola etaria que permite cubrir todo el rango relevante para estudios de carga de enfermedad.
+Esta representaciÃ³n captura la distribuciÃ³n por edad, sexo, ubicaciÃ³n y aÃ±o de manera coherente y continua, incluyendo una extensiÃ³n de la cola etaria que permite cubrir todo el rango relevante para estudios de carga de enfermedad.
 
-Desde una perspectiva epidemiológica, la población estimada constituye un denominador analítico, diseñado para facilitar el cálculo de tasas y la agregación de indicadores, más que una reproducción exacta de la dinámica demográfica subyacente.
+Desde una perspectiva epidemiolÃ³gica, la poblaciÃ³n estimada constituye un denominador analÃ­tico, diseÃ±ado para facilitar el cÃ¡lculo de tasas y la agregaciÃ³n de indicadores, mÃ¡s que una reproducciÃ³n exacta de la dinÃ¡mica demogrÃ¡fica subyacente.
 
-13.2 Qué no representa
+13.2 QuÃ© no representa
 
-Es importante reconocer que la población estimada no constituye una estimación demográfica independiente ni un modelo completo de la dinámica poblacional. En particular:
+Es importante reconocer que la poblaciÃ³n estimada no constituye una estimaciÃ³n demogrÃ¡fica independiente ni un modelo completo de la dinÃ¡mica poblacional. En particular:
 
-no incorpora explícitamente procesos demográficos como fecundidad, mortalidad o migración; no incluye una cuantificación formal de la incertidumbre; no corrige posibles sesgos presentes en la fuente original; no garantiza consistencia con otras fuentes demográficas externas.
+no incorpora explÃ­citamente procesos demogrÃ¡ficos como fecundidad, mortalidad o migraciÃ³n; no incluye una cuantificaciÃ³n formal de la incertidumbre; no corrige posibles sesgos presentes en la fuente original; no garantiza consistencia con otras fuentes demogrÃ¡ficas externas.
 
-Asimismo, la extensión de la población en edades avanzadas debe interpretarse como una aproximación suavizada, y no como una estimación empírica directa basada en datos observados.
+Asimismo, la extensiÃ³n de la poblaciÃ³n en edades avanzadas debe interpretarse como una aproximaciÃ³n suavizada, y no como una estimaciÃ³n empÃ­rica directa basada en datos observados.
 
 13.3 Precauciones en su uso
 
-La interpretación y uso de la población estimada requieren precauciones específicas. En primer lugar, los resultados en edades avanzadas deben ser analizados con cautela, reconociendo que se basan en un proceso de modelamiento sujeto a supuestos.
+La interpretaciÃ³n y uso de la poblaciÃ³n estimada requieren precauciones especÃ­ficas. En primer lugar, los resultados en edades avanzadas deben ser analizados con cautela, reconociendo que se basan en un proceso de modelamiento sujeto a supuestos.
 
-En segundo lugar, la elección entre distintas definiciones de población nacional puede afectar los resultados agregados, por lo que esta decisión debe ser consistente a lo largo del análisis y claramente documentada.
+En segundo lugar, la elecciÃ³n entre distintas definiciones de poblaciÃ³n nacional puede afectar los resultados agregados, por lo que esta decisiÃ³n debe ser consistente a lo largo del anÃ¡lisis y claramente documentada.
 
-Finalmente, dado que el componente no incorpora incertidumbre, los análisis que requieran una evaluación formal de la variabilidad deberían considerar este aspecto de manera complementaria, ya sea mediante análisis de sensibilidad o mediante la integración con otros componentes que sí modelen la incertidumbre.
+Finalmente, dado que el componente no incorpora incertidumbre, los anÃ¡lisis que requieran una evaluaciÃ³n formal de la variabilidad deberÃ­an considerar este aspecto de manera complementaria, ya sea mediante anÃ¡lisis de sensibilidad o mediante la integraciÃ³n con otros componentes que sÃ­ modelen la incertidumbre.
 
-En conjunto, la población estimada debe ser entendida como una herramienta analítica robusta y coherente, cuyo uso adecuado depende de una comprensión clara de sus alcances y limitaciones dentro del marco del estudio de carga de enfermedad.
+En conjunto, la poblaciÃ³n estimada debe ser entendida como una herramienta analÃ­tica robusta y coherente, cuyo uso adecuado depende de una comprensiÃ³n clara de sus alcances y limitaciones dentro del marco del estudio de carga de enfermedad.
 
-## 14. Comparación con enfoques alternativos
+## 14. ComparaciÃ³n con enfoques alternativos
 
-El enfoque adoptado en este componente demográfico se sitúa en un punto intermedio entre distintos marcos metodológicos utilizados para la construcción de poblaciones de referencia en estudios epidemiológicos y de carga de enfermedad. A continuación, se presenta una comparación conceptual con tres enfoques relevantes: (i) el enfoque del INEI, (ii) los enfoques utilizados en estudios globales como el Global Burden of Disease (GBD) y las Global Health Estimates (GHE), y (iii) el uso directo de proyecciones poblacionales sin transformación adicional.
+El enfoque adoptado en este componente demogrÃ¡fico se sitÃºa en un punto intermedio entre distintos marcos metodolÃ³gicos utilizados para la construcciÃ³n de poblaciones de referencia en estudios epidemiolÃ³gicos y de carga de enfermedad. A continuaciÃ³n, se presenta una comparaciÃ³n conceptual con tres enfoques relevantes: (i) el enfoque del INEI, (ii) los enfoques utilizados en estudios globales como el Global Burden of Disease (GBD) y las Global Health Estimates (GHE), y (iii) el uso directo de proyecciones poblacionales sin transformaciÃ³n adicional.
 
-### 14.1 Comparación con el enfoque del INEI
+### 14.1 ComparaciÃ³n con el enfoque del INEI
 
-El INEI produce estimaciones y proyecciones poblacionales mediante modelos demográficos que incorporan explícitamente los componentes de fecundidad, mortalidad y migración, generalmente a nivel de grupos quinquenales de edad y períodos quinquenales de tiempo. A partir de estas proyecciones, genera estimaciones por edad simple mediante procedimientos de desagregación matemática, basados en técnicas de interpolación y en el uso de relaciones de sobrevivencia en edades extremas.
+El INEI produce estimaciones y proyecciones poblacionales mediante modelos demogrÃ¡ficos que incorporan explÃ­citamente los componentes de fecundidad, mortalidad y migraciÃ³n, generalmente a nivel de grupos quinquenales de edad y perÃ­odos quinquenales de tiempo. A partir de estas proyecciones, genera estimaciones por edad simple mediante procedimientos de desagregaciÃ³n matemÃ¡tica, basados en tÃ©cnicas de interpolaciÃ³n y en el uso de relaciones de sobrevivencia en edades extremas.
 
-El presente componente no reproduce este proceso demográfico, sino que utiliza sus resultados como insumo. En este sentido, la relación entre ambos enfoques es de tipo jerárquico:
+El presente componente no reproduce este proceso demogrÃ¡fico, sino que utiliza sus resultados como insumo. En este sentido, la relaciÃ³n entre ambos enfoques es de tipo jerÃ¡rquico:
 
--    el INEI constituye la **fuente primaria de generación demográfica**;
+-    el INEI constituye la **fuente primaria de generaciÃ³n demogrÃ¡fica**;
 
--    el presente componente corresponde a una **adaptación analítica downstream** de dicha información.
+-    el presente componente corresponde a una **adaptaciÃ³n analÃ­tica downstream** de dicha informaciÃ³n.
 
-Esta distinción es fundamental, ya que implica que el componente hereda tanto la estructura como las limitaciones del proceso demográfico original, sin modificar sus supuestos fundamentales.
+Esta distinciÃ³n es fundamental, ya que implica que el componente hereda tanto la estructura como las limitaciones del proceso demogrÃ¡fico original, sin modificar sus supuestos fundamentales.
 
-### 14.2 Comparación con enfoques tipo GBD/GHE
+### 14.2 ComparaciÃ³n con enfoques tipo GBD/GHE
 
-Los estudios globales de carga de enfermedad, como el GBD y las GHE de la OMS, utilizan marcos metodológicos altamente integrados para la estimación de la población, en los cuales:
+Los estudios globales de carga de enfermedad, como el GBD y las GHE de la OMS, utilizan marcos metodolÃ³gicos altamente integrados para la estimaciÃ³n de la poblaciÃ³n, en los cuales:
 
--    la población es modelada de manera conjunta con los componentes demográficos (fecundidad, mortalidad, migración);
+-    la poblaciÃ³n es modelada de manera conjunta con los componentes demogrÃ¡ficos (fecundidad, mortalidad, migraciÃ³n);
 
--    se incorporan múltiples fuentes de datos (censos, registros vitales, encuestas);
+-    se incorporan mÃºltiples fuentes de datos (censos, registros vitales, encuestas);
 
--    se implementan modelos estadísticos complejos para garantizar consistencia interna y comparabilidad internacional;
+-    se implementan modelos estadÃ­sticos complejos para garantizar consistencia interna y comparabilidad internacional;
 
--    se cuantifica explícitamente la incertidumbre asociada a las estimaciones.
+-    se cuantifica explÃ­citamente la incertidumbre asociada a las estimaciones.
 
 En contraste, el presente componente:
 
--    no implementa un modelo demográfico completo ni integra múltiples fuentes poblacionales;
+-    no implementa un modelo demogrÃ¡fico completo ni integra mÃºltiples fuentes poblacionales;
 
--    no estima directamente los componentes demográficos subyacentes;
+-    no estima directamente los componentes demogrÃ¡ficos subyacentes;
 
--    no incorpora cuantificación formal de la incertidumbre.
+-    no incorpora cuantificaciÃ³n formal de la incertidumbre.
 
-Sin embargo, comparte con estos enfoques el objetivo de construir una población estructurada y consistente que sirva como denominador para el cálculo de indicadores de carga de enfermedad.
+Sin embargo, comparte con estos enfoques el objetivo de construir una poblaciÃ³n estructurada y consistente que sirva como denominador para el cÃ¡lculo de indicadores de carga de enfermedad.
 
-En este sentido, el enfoque adoptado puede entenderse como una **aproximación pragmática**, que prioriza la coherencia interna y la reproducibilidad, utilizando como base estimaciones oficiales preexistentes en lugar de reconstruir un sistema completo de modelamiento demográfico.
+En este sentido, el enfoque adoptado puede entenderse como una **aproximaciÃ³n pragmÃ¡tica**, que prioriza la coherencia interna y la reproducibilidad, utilizando como base estimaciones oficiales preexistentes en lugar de reconstruir un sistema completo de modelamiento demogrÃ¡fico.
 
-### 14.3 Comparación con el uso directo de proyecciones poblacionales
+### 14.3 ComparaciÃ³n con el uso directo de proyecciones poblacionales
 
-Una alternativa metodológica frecuente consiste en utilizar directamente las proyecciones poblacionales disponibles, sin aplicar transformaciones adicionales. Este enfoque tiene la ventaja de mantener una alineación estricta con la fuente oficial, pero puede presentar limitaciones en contextos analíticos que requieren:
+Una alternativa metodolÃ³gica frecuente consiste en utilizar directamente las proyecciones poblacionales disponibles, sin aplicar transformaciones adicionales. Este enfoque tiene la ventaja de mantener una alineaciÃ³n estricta con la fuente oficial, pero puede presentar limitaciones en contextos analÃ­ticos que requieren:
 
--    alta resolución etaria (edad simple);
+-    alta resoluciÃ³n etaria (edad simple);
 
--    consistencia exacta entre distintos niveles de agregación;
+-    consistencia exacta entre distintos niveles de agregaciÃ³n;
 
--    compatibilidad con modelos epidemiológicos que requieren distribuciones continuas o suavizadas.
+-    compatibilidad con modelos epidemiolÃ³gicos que requieren distribuciones continuas o suavizadas.
 
 El presente componente introduce transformaciones adicionales sobre la base del INEI con el fin de:
 
 -    asegurar coherencia interna en la estructura poblacional;
 
--    facilitar la integración con el resto del pipeline de carga de enfermedad;
+-    facilitar la integraciÃ³n con el resto del pipeline de carga de enfermedad;
 
 -    permitir agregaciones flexibles y consistentes en distintos niveles.
 
-Estas transformaciones implican un alejamiento controlado respecto a la fuente original, en favor de una mayor utilidad analítica.
+Estas transformaciones implican un alejamiento controlado respecto a la fuente original, en favor de una mayor utilidad analÃ­tica.
 
 ### 14.4 Posicionamiento del enfoque adoptado
 
 En conjunto, el enfoque del presente componente puede caracterizarse como una estrategia intermedia que:
 
--    se apoya en una fuente oficial robusta para la generación de la estructura poblacional;
+-    se apoya en una fuente oficial robusta para la generaciÃ³n de la estructura poblacional;
 
--    evita la complejidad y los requerimientos de datos de un modelo demográfico completo;
+-    evita la complejidad y los requerimientos de datos de un modelo demogrÃ¡fico completo;
 
--    introduce transformaciones adicionales orientadas a la consistencia y utilidad analítica.
+-    introduce transformaciones adicionales orientadas a la consistencia y utilidad analÃ­tica.
 
 Este posicionamiento implica un balance entre:
 
--    **realismo demográfico**, heredado de la fuente INEI;
+-    **realismo demogrÃ¡fico**, heredado de la fuente INEI;
 
--    **consistencia analítica**, introducida por el pipeline;
+-    **consistencia analÃ­tica**, introducida por el pipeline;
 
--    **viabilidad operativa**, en términos de disponibilidad de datos y reproducibilidad.
+-    **viabilidad operativa**, en tÃ©rminos de disponibilidad de datos y reproducibilidad.
 
-### 14.5 Implicancias para la interpretación y comparabilidad
+### 14.5 Implicancias para la interpretaciÃ³n y comparabilidad
 
-La ubicación intermedia de este enfoque tiene implicancias importantes:
+La ubicaciÃ³n intermedia de este enfoque tiene implicancias importantes:
 
 -    los resultados son comparables con estudios que utilizan fuentes poblacionales oficiales similares, siempre que se consideren las transformaciones aplicadas;
 
--    pueden existir diferencias respecto a estimaciones provenientes de marcos como GBD o GHE, debido a divergencias en los modelos demográficos subyacentes y en la incorporación de múltiples fuentes de datos;
+-    pueden existir diferencias respecto a estimaciones provenientes de marcos como GBD o GHE, debido a divergencias en los modelos demogrÃ¡ficos subyacentes y en la incorporaciÃ³n de mÃºltiples fuentes de datos;
 
--    la transparencia en la descripción del proceso de adaptación y modelamiento resulta esencial para interpretar adecuadamente las diferencias entre estimaciones.
+-    la transparencia en la descripciÃ³n del proceso de adaptaciÃ³n y modelamiento resulta esencial para interpretar adecuadamente las diferencias entre estimaciones.
 
-En este contexto, el presente anexo metodológico busca explicitar dichas decisiones, permitiendo una evaluación informada de la validez, comparabilidad y aplicabilidad de los resultados.
+En este contexto, el presente anexo metodolÃ³gico busca explicitar dichas decisiones, permitiendo una evaluaciÃ³n informada de la validez, comparabilidad y aplicabilidad de los resultados.
 
 ## 15. Mejoras futuras identificadas
 
-El desarrollo de este componente ha permitido identificar oportunidades de mejora tanto a nivel metodológico como estructural, las cuales son relevantes para fortalecer la robustez, trazabilidad y escalabilidad del enfoque.
+El desarrollo de este componente ha permitido identificar oportunidades de mejora tanto a nivel metodolÃ³gico como estructural, las cuales son relevantes para fortalecer la robustez, trazabilidad y escalabilidad del enfoque.
 
-Desde el punto de vista metodológico, una de las principales áreas de mejora corresponde a la incorporación de modelos demográficos más fundamentados para el tratamiento de edades avanzadas. La adopción de enfoques como el modelo de Kannisto o extensiones basadas en tablas de vida permitiría representar de manera más realista la dinámica de la población en la cola etaria, así como incorporar restricciones demográficas más informadas. Asimismo, la inclusión de estimaciones de incertidumbre, ya sea mediante métodos analíticos o simulaciones, contribuiría a una mejor integración del componente demográfico en marcos probabilísticos de carga de enfermedad.
+Desde el punto de vista metodolÃ³gico, una de las principales Ã¡reas de mejora corresponde a la incorporaciÃ³n de modelos demogrÃ¡ficos mÃ¡s fundamentados para el tratamiento de edades avanzadas. La adopciÃ³n de enfoques como el modelo de Kannisto o extensiones basadas en tablas de vida permitirÃ­a representar de manera mÃ¡s realista la dinÃ¡mica de la poblaciÃ³n en la cola etaria, asÃ­ como incorporar restricciones demogrÃ¡ficas mÃ¡s informadas. Asimismo, la inclusiÃ³n de estimaciones de incertidumbre, ya sea mediante mÃ©todos analÃ­ticos o simulaciones, contribuirÃ­a a una mejor integraciÃ³n del componente demogrÃ¡fico en marcos probabilÃ­sticos de carga de enfermedad.
 
-Otra línea de mejora relevante es la evaluación sistemática de la consistencia temporal de las estimaciones poblacionales, incluyendo la detección de posibles discontinuidades o cambios metodológicos en la fuente. Esto podría complementarse con estrategias de ajuste o suavización temporal que mejoren la estabilidad de las series.
+Otra lÃ­nea de mejora relevante es la evaluaciÃ³n sistemÃ¡tica de la consistencia temporal de las estimaciones poblacionales, incluyendo la detecciÃ³n de posibles discontinuidades o cambios metodolÃ³gicos en la fuente. Esto podrÃ­a complementarse con estrategias de ajuste o suavizaciÃ³n temporal que mejoren la estabilidad de las series.
 
-En el plano estructural, el proceso de construcción del dataset ha evidenciado la necesidad de contar con estructuras formales de referencia, tales como diccionarios de variables, catálogos de unidades geográficas y maestros de definiciones operativas. Estos elementos permiten estandarizar el significado de las variables, reducir ambigüedades y facilitar la interoperabilidad entre distintos componentes del pipeline.
+En el plano estructural, el proceso de construcciÃ³n del dataset ha evidenciado la necesidad de contar con estructuras formales de referencia, tales como diccionarios de variables, catÃ¡logos de unidades geogrÃ¡ficas y maestros de definiciones operativas. Estos elementos permiten estandarizar el significado de las variables, reducir ambigÃ¼edades y facilitar la interoperabilidad entre distintos componentes del pipeline.
 
-Asimismo, se ha identificado la importancia de fortalecer los mecanismos de control de calidad, mediante la implementación de validaciones sistemáticas que verifiquen propiedades clave del dataset, como la unicidad de la unidad analítica, la consistencia jerárquica y la plausibilidad de la distribución etaria. La formalización de estos controles contribuiría a mejorar la confiabilidad del proceso y a detectar errores de manera temprana.
+Asimismo, se ha identificado la importancia de fortalecer los mecanismos de control de calidad, mediante la implementaciÃ³n de validaciones sistemÃ¡ticas que verifiquen propiedades clave del dataset, como la unicidad de la unidad analÃ­tica, la consistencia jerÃ¡rquica y la plausibilidad de la distribuciÃ³n etaria. La formalizaciÃ³n de estos controles contribuirÃ­a a mejorar la confiabilidad del proceso y a detectar errores de manera temprana.
 
-Otra mejora estructural consiste en la generalización del enfoque para su aplicación a otras fuentes o contextos geográficos. Esto implica diseñar el componente de manera modular, de modo que pueda adaptarse a diferentes estructuras de datos sin comprometer la coherencia metodológica.
+Otra mejora estructural consiste en la generalizaciÃ³n del enfoque para su aplicaciÃ³n a otras fuentes o contextos geogrÃ¡ficos. Esto implica diseÃ±ar el componente de manera modular, de modo que pueda adaptarse a diferentes estructuras de datos sin comprometer la coherencia metodolÃ³gica.
 
-Finalmente, la arquitectura del sistema que soporta este componente puede beneficiarse de una mayor estandarización en la organización de sus elementos, promoviendo una separación clara entre definiciones conceptuales, reglas de transformación y validaciones. Esta claridad estructural es clave para asegurar la sostenibilidad del componente en el tiempo y facilitar su uso por parte de distintos equipos.
+Finalmente, la arquitectura del sistema que soporta este componente puede beneficiarse de una mayor estandarizaciÃ³n en la organizaciÃ³n de sus elementos, promoviendo una separaciÃ³n clara entre definiciones conceptuales, reglas de transformaciÃ³n y validaciones. Esta claridad estructural es clave para asegurar la sostenibilidad del componente en el tiempo y facilitar su uso por parte de distintos equipos.
 
-## 16. Conclusión
+## 16. Anexo tecnico de auditoria y despliegue
 
-El componente demográfico desarrollado constituye una base fundamental para el estudio de carga de enfermedad, al proporcionar una representación coherente, estructurada y analíticamente utilizable de la población. A lo largo del método, se ha priorizado la claridad de las definiciones, la consistencia interna de los datos y la transparencia en las decisiones metodológicas, en línea con estándares internacionales.
+Esta seccion documenta el metodo realmente implementado en el repositorio y la evidencia minima que debe revisarse despues de una corrida. El output contractual downstream se mantiene en `data/final/population_inei/population_result.parquet`, con las columnas `year_id`, `age`, `sex_id`, `location_id` y `population`, todas enteras, y con llave logica unica `(year_id, age, sex_id, location_id)`. En la version actual, `age` significa edades simples `0-109` y una ultima fila `age=110` que representa explicitamente el grupo abierto `110+`.
 
-El enfoque adoptado logra equilibrar la fidelidad a la fuente oficial con la necesidad de adaptar los datos a un marco analítico exigente, mediante procesos de estandarización, armonización y modelamiento. En particular, la extensión de la distribución etaria y la construcción de agregados coherentes permiten cubrir requerimientos clave de los análisis epidemiológicos.
+### 16.1 Flujo operativo real
 
-No obstante, el método reconoce sus limitaciones, especialmente en lo que respecta al tratamiento de edades avanzadas y a la ausencia de una cuantificación explícita de la incertidumbre. Estas limitaciones no invalidan su utilidad, pero sí delimitan su alcance y orientan las mejoras futuras.
+```text
+scripts/01_ingesta_raw_inei.R
+  Lee/descarga archivos INEI, parsea hojas Excel y genera raw_long.parquet.
 
-En conjunto, este componente debe ser entendido como un insumo analítico robusto y reproducible, cuya principal fortaleza radica en su coherencia interna y en su integración efectiva dentro del pipeline de carga de enfermedad. Su desarrollo sienta las bases para futuras extensiones metodológicas que permitan acercarlo progresivamente a los estándares más avanzados de la demografía aplicada, manteniendo al mismo tiempo su viabilidad operativa en contextos reales.
+scripts/02_normaliza_long_omop.R
+  Normaliza el staging, deriva edad simple/grupos e infiere gender_source_value.
+
+scripts/03_extrapola_80_110.R
+  Conserva edades simples observadas 0-79, toma la masa observada 80 y +,
+  usa como benchmark principal la tabla de vida oficial regional all_years
+  de tabla-mortalidad-peru para location_id 1-25 y anos 1995-2025,
+  pero solo en edades cerradas 80-109; la fila abierta 110+ queda excluida
+  como input de modelamiento y se usa solo como contexto/QC,
+  construye un benchmark nacional implicito para location_id 0 agregando
+  las formas regionales oficiales ponderadas por la masa observada 80 y +,
+  y usa fallback Peru WPP solo para 2026-2030 con extension Kannisto logit(qx),
+  modela edades internas 0-125, colapsa 110-125 en 110+ y exporta
+  0-109 mas una ultima fila age=110 documentada como 110+.
+
+scripts/04_build_national_from_dept.R
+  Construye el nacional aditivo 9000 como suma exacta de departamentos 01-25.
+
+scripts/05_build_population_view_hierarchical.R
+  Excluye el nacional oficial 0 y agrega el nacional aditivo 9000.
+
+scripts/99_qc_global.R
+  Valida el contrato principal y genera diccionario, QC y catalogo.
+
+scripts/99_qc_global_hierarchical.R
+  Valida la vista jerarquica y registra los artefactos de QC.
+```
+
+### 16.2 Pseudocodigo del nucleo metodologico
+
+```text
+Para cada archivo departamental/nacional del INEI:
+  identificar hojas por sexo
+  encontrar fila de encabezado con Edad
+  extraer columnas de anio y poblacion
+  convertir a formato largo por ubicacion, sexo, edad y anio
+
+Para cada estrato location_id-year_id-sex_id:
+  conservar edades simples observadas 0-79
+  leer la masa observada del grupo abierto 80 y +
+  si location_id esta entre 1 y 25 y year_id esta entre 1995 y 2025:
+    leer la tabla de vida oficial regional all_years
+    descartar la fila abierta 110+
+    usar solo la forma cerrada 80-109 y extender 110-125 con Kannisto sobre qx 95-109
+  si location_id es 0 y year_id esta entre 1995 y 2025:
+    agregar las formas regionales oficiales ya corregidas ponderadas por la masa observada 80 y +
+  si year_id esta entre 2026 y 2030:
+    usar fallback Peru WPP y extender 110-125 con Kannisto
+  convertir la schedule benchmark del estrato en pesos de supervivencia 80-125
+  repartir la masa 80 y + con esos pesos para obtener conteos esperados internos 80-125
+  colapsar 110-125 en 110+
+  redondear 80-109 y 110+ con Hamilton preservando exactamente la masa observada 80 y +
+
+Para la vista jerarquica:
+  sumar departamentos 01-25 por year_id-age-sex_id
+  asignar location_id = 9000
+  excluir location_id = 0
+  validar que 9000 sea igual a la suma exacta de departamentos
+```
+
+### 16.3 Evidencia de contrato y QC
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+root_dir <- if (dir.exists("data")) "." else ".."
+paths <- list(
+  baseline = file.path(root_dir, "data/derived/qc/inei_population/contract_fingerprint_baseline.csv"),
+  post = file.path(root_dir, "data/derived/qc/inei_population/contract_fingerprint_post.csv"),
+  qc = file.path(root_dir, "data/derived/qc/inei_population/qc_summary.csv"),
+  qc_h = file.path(root_dir, "data/derived/qc/inei_population/hierarchical/qc_hierarchical_summary.csv"),
+  qc_tail_mass = file.path(root_dir, "data/derived/qc/inei_population/qc_tail_mass_80plus_exact.csv"),
+  qc_tail_cap = file.path(root_dir, "data/derived/qc/inei_population/qc_tail_cap_125_national.csv"),
+  qc_110plus = file.path(root_dir, "data/derived/qc/inei_population/qc_110plus_collapse_exact.csv"),
+  dict = file.path(root_dir, "data/final/population_inei/population_result_diccionario_ext.csv"),
+  dict_coverage = file.path(root_dir, "data/derived/qc/inei_population/dictionary_coverage_summary.csv")
+)
+
+read_if_exists <- function(path) {
+  if (file.exists(path)) read.csv(path, stringsAsFactors = FALSE) else NULL
+}
+
+baseline_fp <- read_if_exists(paths$baseline)
+post_fp <- read_if_exists(paths$post)
+qc_summary <- read_if_exists(paths$qc)
+qc_h_summary <- read_if_exists(paths$qc_h)
+qc_tail_mass <- read_if_exists(paths$qc_tail_mass)
+qc_tail_cap <- read_if_exists(paths$qc_tail_cap)
+qc_110plus <- read_if_exists(paths$qc_110plus)
+dict_final <- read_if_exists(paths$dict)
+dict_coverage <- read_if_exists(paths$dict_coverage)
+
+if (!is.null(baseline_fp) && !is.null(post_fp)) {
+  compare_cols <- c(
+    "n_rows", "n_cols", "columns", "schema", "pk_unique_n",
+    "pk_duplicate_n", "required_missing_n", "year_range", "age_range",
+    "sex_domain", "location_domain", "population_range", "content_sha256"
+  )
+  comparison <- data.frame(
+    check = compare_cols,
+    baseline = unlist(baseline_fp[1, compare_cols], use.names = FALSE),
+    post = unlist(post_fp[1, compare_cols], use.names = FALSE),
+    match = unlist(baseline_fp[1, compare_cols], use.names = FALSE) ==
+      unlist(post_fp[1, compare_cols], use.names = FALSE)
+  )
+  knitr::kable(comparison, caption = "Comparacion baseline vs post-cambio del output contractual")
+} else {
+  cat("La comparacion baseline/post se completa despues de ejecutar scripts/98_contract_fingerprint.R antes y despues del pipeline.")
+}
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+if (!is.null(qc_summary)) {
+  knitr::kable(qc_summary, caption = "QC global del output contractual")
+}
+if (!is.null(qc_h_summary)) {
+  knitr::kable(qc_h_summary, caption = "QC global de la vista jerarquica")
+}
+if (!is.null(qc_tail_mass)) {
+  knitr::kable(qc_tail_mass, caption = "Chequeo exacto de preservacion de masa observada 80 y +")
+}
+if (!is.null(qc_tail_cap)) {
+  knitr::kable(qc_tail_cap, caption = "Chequeo del tope nacional por sexo y ano en age 125")
+}
+if (!is.null(qc_110plus)) {
+  knitr::kable(qc_110plus, caption = "Chequeo exacto del colapso contractual 110+")
+}
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+if (!is.null(dict_final)) {
+  show_cols <- intersect(
+    c("column_name", "label", "data_type", "is_required", "is_key", "allow_na", "observed_min", "observed_max"),
+    names(dict_final)
+  )
+  knitr::kable(dict_final[, show_cols, drop = FALSE], caption = "Diccionario extendido del output contractual")
+}
+```
+
+### 16.4 Cobertura de diccionarios
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+if (!is.null(dict_coverage)) {
+  knitr::kable(dict_coverage, caption = "Cobertura de diccionarios para tablas del pipeline")
+} else {
+  cat("La cobertura de diccionarios se completa despues de ejecutar scripts/97_validate_dictionary_coverage.R.")
+}
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+if (!is.null(qc_summary) && all(c("n_pk_dups", "n_negative_pop", "n_tail_increase_flags") %in% names(qc_summary))) {
+  qc_counts <- unlist(qc_summary[1, c("n_pk_dups", "n_negative_pop", "n_tail_increase_flags")])
+  barplot(
+    qc_counts,
+    main = "Conteos de flags QC principales",
+    ylab = "n",
+    col = c("#4C78A8", "#F58518", "#54A24B")
+  )
+}
+```
+
+### 16.5 Despliegue y validacion
+
+La ejecucion reproducible se realiza desde la raiz del repositorio con R disponible y los paquetes del proyecto instalados:
+
+```r
+source("scripts/01_ingesta_raw_inei.R")
+source("scripts/02_normaliza_long_omop.R")
+source("scripts/03_extrapola_80_110.R")
+source("scripts/04_build_national_from_dept.R")
+source("scripts/05_build_population_view_hierarchical.R")
+source("scripts/99_qc_global.R")
+source("scripts/99_qc_global_hierarchical.R")
+```
+
+Para auditoria de compatibilidad, generar fingerprints antes y despues:
+
+```bash
+Rscript scripts/98_contract_fingerprint.R data/final/population_inei/population_result.parquet data/derived/qc/inei_population/contract_fingerprint_baseline.csv
+Rscript scripts/98_contract_fingerprint.R data/final/population_inei/population_result.parquet data/derived/qc/inei_population/contract_fingerprint_post.csv
+Rscript scripts/96_generate_table_dictionaries.R
+Rscript scripts/97_validate_dictionary_coverage.R
+```
+
+Renderizar el reporte tecnico-metodologico:
+
+```bash
+quarto render reports/method-report.qmd
+```
+
+### 16.6 Propuesta de maestros
+
+Los maestros normativos actuales son `config/maestro_location_dept.csv`, `config/maestro_location_hierarchical.csv`, `config/maestro_sex_omop.csv` y los YAML de `config/`. Se recomienda mantenerlos como fuente operativa de verdad.
+
+Como mejoras futuras no contractuales, se propone agregar:
+
+- maestro explicito de hoja INEI a sexo, para reducir dependencia de heuristicas de nombres de hoja;
+- maestro de edades y grupos de edad compatible con agregaciones GBD/OMS;
+- diccionario formal para `raw_long.parquet` y `omop_like_long.parquet`;
+- registro de decisiones metodologicas versionado como deuda tecnica, no como instruccion de ejecucion.
+
+Estas propuestas no deben modificar la ruta, nombre, columnas, tipos, granularidad ni semantica del output contractual sin una salida versionada adicional.
+
+## 17. ConclusiÃ³n
+
+El componente demogrÃ¡fico desarrollado constituye una base fundamental para el estudio de carga de enfermedad, al proporcionar una representaciÃ³n coherente, estructurada y analÃ­ticamente utilizable de la poblaciÃ³n. A lo largo del mÃ©todo, se ha priorizado la claridad de las definiciones, la consistencia interna de los datos y la transparencia en las decisiones metodolÃ³gicas, en lÃ­nea con estÃ¡ndares internacionales.
+
+El enfoque adoptado logra equilibrar la fidelidad a la fuente oficial con la necesidad de adaptar los datos a un marco analÃ­tico exigente, mediante procesos de estandarizaciÃ³n, armonizaciÃ³n y modelamiento. En particular, la extensiÃ³n de la distribuciÃ³n etaria y la construcciÃ³n de agregados coherentes permiten cubrir requerimientos clave de los anÃ¡lisis epidemiolÃ³gicos.
+
+No obstante, el mÃ©todo reconoce sus limitaciones, especialmente en lo que respecta al tratamiento de edades avanzadas y a la ausencia de una cuantificaciÃ³n explÃ­cita de la incertidumbre. Estas limitaciones no invalidan su utilidad, pero sÃ­ delimitan su alcance y orientan las mejoras futuras.
+
+En conjunto, este componente debe ser entendido como un insumo analÃ­tico robusto y reproducible, cuya principal fortaleza radica en su coherencia interna y en su integraciÃ³n efectiva dentro del pipeline de carga de enfermedad. Su desarrollo sienta las bases para futuras extensiones metodolÃ³gicas que permitan acercarlo progresivamente a los estÃ¡ndares mÃ¡s avanzados de la demografÃ­a aplicada, manteniendo al mismo tiempo su viabilidad operativa en contextos reales.
+

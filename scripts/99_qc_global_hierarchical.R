@@ -87,9 +87,7 @@ qc_missing_required <- data.table(
 
 # Duplicados PK
 if (all(pk %in% names(dt))) {
-  dt[, pk_hash := do.call(paste, c(.SD, sep = "||")), .SDcols = pk]
-  dup_dt <- dt[duplicated(pk_hash) | duplicated(pk_hash, fromLast = TRUE)]
-  dup_dt[, pk_hash := NULL]
+  dup_dt <- dt[, .N, by = pk][N > 1L]
 } else {
   dup_dt <- data.table(note = "No se pudo evaluar duplicados: faltan columnas PK.")
 }
@@ -183,35 +181,47 @@ message(" - ", basename(OUT_SUMMARY))
 message(" - ", basename(OUT_NAT_ADDIT))
 
 # ----------------------------
-# Register artefacts in _catalog (si tus utils lo soportan)
+# Register artifacts in _catalog
 # ----------------------------
-# Nota: aquí uso nombres genéricos; ajusta a tus funciones reales si difieren.
-# La idea: registrar spec usada + parquet leído + qc outputs generados.
+dataset_id <- spec$dataset_id %||% "inei_population_1995_2030"
+table_name <- "population_result_hierarchical"
+dataset_version <- "v1.0.0"
+run_id <- format(Sys.time(), "%Y%m%d_%H%M%S")
 
-try({
-  run_id <- register_run_start(
-    pipeline_id = "demografia-poblacion-inei",
-    stage = "qc_global_hierarchical",
-    notes = "QC duro + detectivo para vista jerárquica (9000 aditivo; no permite 0)."
+register_run_start(run_id, dataset_id, dataset_version)
+
+register_artifact(
+  dataset_id = dataset_id,
+  table_name = table_name,
+  version = dataset_version,
+  run_id = run_id,
+  artifact_type = "final_dataset",
+  artifact_path = FINAL_PARQUET,
+  n_rows = nrow(dt),
+  n_cols = ncol(dt),
+  notes = "Vista jerarquica QC: deptos base + nacional aditivo 9000; excluye 0."
+)
+
+register_artifact(
+  dataset_id = dataset_id,
+  table_name = table_name,
+  version = dataset_version,
+  run_id = run_id,
+  artifact_type = "spec",
+  artifact_path = SPEC_PATH,
+  notes = "Spec YAML usado para QC jerarquico."
+)
+
+for (fp in c(OUT_SUMMARY, OUT_MISSING_REQ, OUT_DUPS, OUT_NEGATIVE, OUT_NAT_ADDIT)) {
+  register_artifact(
+    dataset_id = dataset_id,
+    table_name = table_name,
+    version = dataset_version,
+    run_id = run_id,
+    artifact_type = "qc",
+    artifact_path = fp,
+    notes = paste("QC jerarquico:", basename(fp))
   )
-  
-  artefacts <- c(
-    SPEC_PATH,
-    FINAL_PARQUET,
-    OUT_SUMMARY,
-    OUT_MISSING_REQ,
-    OUT_DUPS,
-    OUT_NEGATIVE,
-    OUT_NAT_ADDIT
-  )
-  
-  for (fp in artefacts) {
-    register_artefact(
-      run_id = run_id,
-      file_path = fp,
-      dataset_id = spec$dataset_id %||% "inei_population_1995_2030_hierarchical"
-    )
-  }
-  
-  register_run_finish(run_id = run_id, status = "success")
-}, silent = TRUE)
+}
+
+register_run_finish(run_id, status = "success")

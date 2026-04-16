@@ -1,0 +1,12 @@
+dataset_id,version,run_id,table_name,column_name,label,description,data_type,units,allow_na,is_key,n_missing,pct_missing,observed_min,observed_max,example_values
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_national_modes,sex_id,sex_id,sex_id,integer,,FALSE,TRUE,0,0,8507,8532,8507|8532
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_national_modes,year_id,year_id,year_id,integer,,FALSE,TRUE,0,0,1995,2030,1995|1996|1997|1998|1999
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_national_modes,age,age,age,integer,,FALSE,TRUE,0,0,0,110,0|1|2|3|4
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_national_modes,official_0,Nacional oficial 0,Conteo nacional oficial preservado en el output contractual con location_id 0.,integer,,FALSE,FALSE,0,0,0,319672,319672|318194|318421|318290|317621
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_national_modes,dept_sum,Suma departamental,"Suma de departamentos 1-25 para el mismo aÃ±o, edad y sexo.",integer,,FALSE,FALSE,0,0,0,319672,319672|318194|318421|318290|317621
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_national_modes,additive_9000,Nacional aditivo 9000,Conteo nacional aditivo con location_id 9000 en la vista jerarquica.,integer,,FALSE,FALSE,0,0,0,319672,319672|318194|318421|318290|317621
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_national_modes,sex_name,sex_name,sex_name,character,,FALSE,FALSE,0,0,,,Masculino|Femenino
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_national_modes,diff_official0_minus_dept_sum,Delta oficial 0 - departamentos,Diferencia entre nacional oficial y suma departamental; es QC detectivo.,integer,,FALSE,FALSE,0,0,-5,5,0|-2|1|2|-1
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_national_modes,diff_9000_minus_dept_sum,Delta 9000 - departamentos,Diferencia entre nacional aditivo 9000 y suma departamental; debe ser cero.,integer,,FALSE,FALSE,0,0,0,0,0
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_national_modes,flag_official0_diff,Flag oficial 0,TRUE cuando el nacional oficial difiere de la suma departamental.,logical,,FALSE,FALSE,0,0,,,FALSE|TRUE
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_national_modes,flag_9000_diff,Flag 9000,TRUE cuando 9000 no coincide con la suma departamental.,logical,,FALSE,FALSE,0,0,,,FALSE

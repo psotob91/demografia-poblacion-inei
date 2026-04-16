@@ -1,0 +1,10 @@
+dataset_id,version,run_id,table_name,column_name,label,description,data_type,units,allow_na,is_key,n_missing,pct_missing,observed_min,observed_max,example_values
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_national_vs_dept_sum,year_id,Año calendario,Año calendario de la estimación.,integer,,FALSE,FALSE,0,0,1995,2030,1995|1996|1997|1998|1999
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_national_vs_dept_sum,sex_id,Sexo,Identificador OMOP-like de sexo usado por el proyecto.,integer,,FALSE,FALSE,0,0,8507,8532,8507|8532
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_national_vs_dept_sum,age,Edad simple,Edad simple en años cumplidos.,integer,years,FALSE,FALSE,0,0,0,110,0|1|2|3|4
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_national_vs_dept_sum,pop_national,pop_national,pop_national,integer,,FALSE,FALSE,0,0,0,319672,319672|318194|318421|318290|317621
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_national_vs_dept_sum,pop_dept_sum,pop_dept_sum,pop_dept_sum,integer,,FALSE,FALSE,0,0,0,319672,319672|318194|318421|318290|317621
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_national_vs_dept_sum,diff_abs,diff_abs,diff_abs,integer,,FALSE,FALSE,0,0,-5,5,0|-2|1|2|-1
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_national_vs_dept_sum,diff_pct,diff_pct,diff_pct,numeric,,TRUE,FALSE,62,0.7758,-8.16326530612245,500,0|-0.0215936082919456|0.0119803522223553|-0.0268564522626561|0.0304831580551745
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_national_vs_dept_sum,flag_diff,flag_diff,flag_diff,logical,,FALSE,FALSE,0,0,,,FALSE|TRUE
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_national_vs_dept_sum,flag_missing,flag_missing,flag_missing,logical,,FALSE,FALSE,0,0,,,FALSE

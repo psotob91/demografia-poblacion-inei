@@ -1,0 +1,6 @@
+dataset_id,version,run_id,table_name,column_name,label,description,data_type,units,allow_na,is_key,n_missing,pct_missing,observed_min,observed_max,example_values
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_negative_population,year_id,Año calendario,Año calendario de la estimación.,logical,,FALSE,FALSE,0,,,,""
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_negative_population,age,Edad simple,Edad simple en años cumplidos.,logical,years,FALSE,FALSE,0,,,,""
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_negative_population,sex_id,Sexo,Identificador OMOP-like de sexo usado por el proyecto.,logical,,FALSE,FALSE,0,,,,""
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_negative_population,location_id,Ubicación,Identificador de ubicación del proyecto.,logical,,FALSE,FALSE,0,,,,""
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_negative_population,population,Población,Conteo absoluto de población.,logical,persons,FALSE,FALSE,0,,,,""

@@ -1,0 +1,13 @@
+step_id,step_order,script_path,status,exit_code,started_at,finished_at,elapsed_sec
+ingesta_raw,10,scripts/01_ingesta_raw_inei.R,success,0,2026-04-16 01:57:59,2026-04-16 01:58:59,60.0984089374542
+normaliza_long,20,scripts/02_normaliza_long_omop.R,success,0,2026-04-16 01:58:59,2026-04-16 01:59:12,12.4267361164093
+extrapola_cola,30,scripts/03_extrapola_80_110.R,success,0,2026-04-16 01:59:12,2026-04-16 01:59:54,42.3524470329285
+build_national,40,scripts/04_build_national_from_dept.R,success,0,2026-04-16 01:59:54,2026-04-16 01:59:59,4.61168193817139
+build_hierarchical,50,scripts/05_build_population_view_hierarchical.R,success,0,2026-04-16 01:59:59,2026-04-16 02:00:04,4.78179407119751
+qc_global,60,scripts/99_qc_global.R,success,0,2026-04-16 02:00:04,2026-04-16 02:00:12,8.21716690063477
+qc_hierarchical,70,scripts/99_qc_global_hierarchical.R,success,0,2026-04-16 02:00:12,2026-04-16 02:00:17,5.0665009021759
+fingerprint_post,80,scripts/98_contract_fingerprint_post.R,success,0,2026-04-16 02:00:17,2026-04-16 02:00:26,8.93330717086792
+generate_dictionaries,90,scripts/96_generate_table_dictionaries.R,success,0,2026-04-16 02:00:26,2026-04-16 02:00:33,6.91943311691284
+validate_dictionary_coverage,100,scripts/97_validate_dictionary_coverage.R,success,0,2026-04-16 02:00:33,2026-04-16 02:00:37,4.75226998329163
+render_method_report,110,scripts/94_render_method_report.R,success,0,2026-04-16 02:00:37,2026-04-16 02:01:06,28.1560690402985
+build_qc_portal,120,scripts/95_build_qc_demografia_reports.R,success,0,2026-04-16 02:01:06,2026-04-16 02:29:26,1700.58193302155

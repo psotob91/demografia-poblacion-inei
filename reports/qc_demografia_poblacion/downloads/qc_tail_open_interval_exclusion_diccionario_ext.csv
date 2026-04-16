@@ -1,0 +1,15 @@
+dataset_id,version,run_id,table_name,column_name,label,description,data_type,units,allow_na,is_key,n_missing,pct_missing,observed_min,observed_max,example_values
+inei_population_1995_2030,v1.0.0,20260416_020008,qc_tail_open_interval_exclusion,year_id,year_id,year_id,integer,,FALSE,TRUE,0,0,1995,2030,1995|1996|1997|1998|1999
+inei_population_1995_2030,v1.0.0,20260416_020008,qc_tail_open_interval_exclusion,sex_id,sex_id,sex_id,integer,,FALSE,TRUE,0,0,8507,8532,8507|8532
+inei_population_1995_2030,v1.0.0,20260416_020008,qc_tail_open_interval_exclusion,location_id,location_id,location_id,integer,,FALSE,TRUE,0,0,0,25,0|1|2|3|4
+inei_population_1995_2030,v1.0.0,20260416_020008,qc_tail_open_interval_exclusion,benchmark_source,Fuente benchmark,Descripcion de la fuente usada para construir la cola benchmark del estrato.,character,,FALSE,FALSE,0,0,,,"Implicit national benchmark from official all_years regional life tables weighted by observed 80+ mass; only closed ages 80-109 are used before Kannisto extension|benchmark local derivado de tabla-mortalidad-peru all_years single_age cerrado 80-109; TABLAS ABREVIADAS DE MORTALIDAD
+1995-2000; extension Kannisto on qx 95-109 to 125|benchmark local derivado de tabla-mortalidad-peru all_years single_age cerrado 80-109; TABLAS ABREVIADAS DE MORTALIDAD
+2000-2005; extension Kannisto on qx 95-109 to 125|benchmark local derivado de tabla-mortalidad-peru all_years single_age cerrado 80-109; TABLAS ABREVIADAS DE MORTALIDAD
+2005-2010; extension Kannisto on qx 95-109 to 125|benchmark local derivado de tabla-mortalidad-peru all_years single_age cerrado 80-109; TABLAS ABREVIADAS DE MORTALIDAD
+2010-2015; extension Kannisto on qx 95-109 to 125"
+inei_population_1995_2030,v1.0.0,20260416_020008,qc_tail_open_interval_exclusion,source_effective,Fuente efectiva,Clasificacion operativa del benchmark del estrato.,character,,FALSE,FALSE,0,0,,,implicit_national_from_official_regions|official_life_table_all_years_regional|production_independent_wpp_peru
+inei_population_1995_2030,v1.0.0,20260416_020008,qc_tail_open_interval_exclusion,benchmark_observed_age_max,Edad maxima cerrada usada,Ultima edad cerrada tomada del benchmark externo antes de la extension interna.,integer,,TRUE,FALSE,260,13.8889,109,109,109
+inei_population_1995_2030,v1.0.0,20260416_020008,qc_tail_open_interval_exclusion,used_open_110plus_row,Uso de 110+ abierto,TRUE si se detecta uso de la fila abierta 110+ como input de modelamiento; debe ser FALSE.,logical,,TRUE,FALSE,260,13.8889,,,FALSE
+inei_population_1995_2030,v1.0.0,20260416_020008,qc_tail_open_interval_exclusion,fit_age_min,Edad minima de ajuste,Edad minima de las filas cerradas usadas en el ajuste Kannisto.,integer,,TRUE,FALSE,260,13.8889,95,95,95
+inei_population_1995_2030,v1.0.0,20260416_020008,qc_tail_open_interval_exclusion,fit_age_max,Edad maxima de ajuste,Edad maxima de las filas cerradas usadas en el ajuste Kannisto.,integer,,TRUE,FALSE,260,13.8889,109,109,109
+inei_population_1995_2030,v1.0.0,20260416_020008,qc_tail_open_interval_exclusion,flag_diff,Flag de diferencia,TRUE si el estrato viola la regla de exclusion del intervalo abierto.,logical,,FALSE,FALSE,0,0,,,FALSE

@@ -1,0 +1,2 @@
+run_id,generated_at,portal_root,contract_rows,hierarchical_rows,curve_figures,trend_figures,heatmap_figures,qc_observed_final_figures,qc_extrapolation_figures,qc_110plus_collapse_figures,qc_national_figures,contract_ok,hierarchical_ok,dictionary_coverage_ok,fingerprint_structure_ok,fingerprint_content_match
+portal-qc-demografia-20260416-023822,2026-04-16 03:06:22,reports/qc_demografia_poblacion,207792,207792,936,26,26,1872,1872,1,72,TRUE,TRUE,TRUE,,

@@ -1,0 +1,18 @@
+dataset_id,version,run_id,table_name,column_name,label,description,data_type,units,allow_na,is_key,n_missing,pct_missing,observed_min,observed_max,example_values
+inei_population_1995_2030,v1.0.0,20260416_020030,contract_fingerprint_post,input_path,input_path,input_path,character,,FALSE,FALSE,0,0,,,C:/Users/Usuario/OneDrive/Consultorias_Personales/Carga-CDC-Peru-2023/carga-enfermedad-peru-2018-2024/demografia-poblacion-inei/data/final/population_inei/population_result.parquet
+inei_population_1995_2030,v1.0.0,20260416_020030,contract_fingerprint_post,generated_at,generated_at,generated_at,datetime,,FALSE,FALSE,0,0,,,2026-04-16 02:00:26
+inei_population_1995_2030,v1.0.0,20260416_020030,contract_fingerprint_post,n_rows,n_rows,n_rows,integer,,FALSE,FALSE,0,0,207792,207792,207792
+inei_population_1995_2030,v1.0.0,20260416_020030,contract_fingerprint_post,n_cols,n_cols,n_cols,integer,,FALSE,FALSE,0,0,5,5,5
+inei_population_1995_2030,v1.0.0,20260416_020030,contract_fingerprint_post,columns,columns,columns,character,,FALSE,FALSE,0,0,,,year_id|age|sex_id|location_id|population
+inei_population_1995_2030,v1.0.0,20260416_020030,contract_fingerprint_post,schema,schema,schema,character,,FALSE,FALSE,0,0,,,year_id:integer;age:integer;sex_id:integer;location_id:integer;population:integer
+inei_population_1995_2030,v1.0.0,20260416_020030,contract_fingerprint_post,missing_required_cols,missing_required_cols,missing_required_cols,logical,,TRUE,FALSE,1,100,,,""
+inei_population_1995_2030,v1.0.0,20260416_020030,contract_fingerprint_post,pk_unique_n,pk_unique_n,pk_unique_n,integer,,FALSE,FALSE,0,0,207792,207792,207792
+inei_population_1995_2030,v1.0.0,20260416_020030,contract_fingerprint_post,pk_duplicate_n,pk_duplicate_n,pk_duplicate_n,integer,,FALSE,FALSE,0,0,0,0,0
+inei_population_1995_2030,v1.0.0,20260416_020030,contract_fingerprint_post,required_missing_n,required_missing_n,required_missing_n,integer,,FALSE,FALSE,0,0,0,0,0
+inei_population_1995_2030,v1.0.0,20260416_020030,contract_fingerprint_post,year_range,year_range,year_range,character,,FALSE,FALSE,0,0,,,1995|2030
+inei_population_1995_2030,v1.0.0,20260416_020030,contract_fingerprint_post,age_range,age_range,age_range,character,,FALSE,FALSE,0,0,,,0|110
+inei_population_1995_2030,v1.0.0,20260416_020030,contract_fingerprint_post,sex_domain,sex_domain,sex_domain,character,,FALSE,FALSE,0,0,,,8507|8532
+inei_population_1995_2030,v1.0.0,20260416_020030,contract_fingerprint_post,location_domain,location_domain,location_domain,character,,FALSE,FALSE,0,0,,,0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25
+inei_population_1995_2030,v1.0.0,20260416_020030,contract_fingerprint_post,population_range,population_range,population_range,character,,FALSE,FALSE,0,0,,,0|319672
+inei_population_1995_2030,v1.0.0,20260416_020030,contract_fingerprint_post,file_md5,file_md5,file_md5,character,,FALSE,FALSE,0,0,,,a16f97f3e1bb2dc1f7a2a8a588369fbd
+inei_population_1995_2030,v1.0.0,20260416_020030,contract_fingerprint_post,content_sha256,content_sha256,content_sha256,character,,FALSE,FALSE,0,0,,,761ab7d014948bb144d1ea7c3ba725bfb9514e94c2142cb2e9f676a0a4bf8184

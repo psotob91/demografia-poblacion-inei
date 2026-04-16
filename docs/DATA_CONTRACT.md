@@ -41,7 +41,7 @@ Required columns:
 Calendar year of the estimate.
 
 ### `age`
-Single year of age in integer form.
+Contractual age field in integer form. Ages `0` to `109` represent single completed years of age. `age = 110` represents the open-ended age group `110+`.
 
 ### `sex_id`
 OMOP-like concept identifier for sex coding used by the project.
@@ -51,6 +51,35 @@ Project location identifier used for national or department-level geography acco
 
 ### `population`
 Population count for the exact stratum defined by year, age, sex, and location.
+
+## Local benchmark and self-contained build
+
+The contractual dataset is built from a self-contained base pipeline. High-age tail anchoring uses a local benchmark file stored inside this repository:
+
+- `data/raw/external_benchmarks/peru_life_table_all_years_closed_80_109.csv`
+
+That benchmark:
+- is a local, versioned copy derived from `tabla-mortalidad-peru`;
+- includes only closed ages `80:109`;
+- excludes the open `110+` mortality row by design;
+- allows the base build to run without a runtime dependency on sibling repositories.
+
+## Cross-repo coherence exception
+
+This repository may optionally consume a non-sensitive external snapshot from `mortalidad-causa-especifica` summarizing observed deaths in `110+` by `year_id`, `sex_id`, and `location_id`.
+
+If that snapshot exists and is structurally valid, the contractual output applies one narrow guard-rail:
+
+- when observed deaths `110+ > 0`
+- and contractual `age = 110` would otherwise be `0`
+
+then `population(age = 110)` is raised to `1`.
+
+This exception:
+- is downstream-visible by design;
+- is recorded in QC as `coherence_floor_applied` and `mass_adjustment_from_crossrepo_qc`;
+- does not change ages `0:109`;
+- does not replace the main demographic tail model.
 
 ## Stability requirements
 

@@ -59,6 +59,8 @@ desktop.ini
 !*.qmd
 !*.md
 !*.txt
+!reports/method-report.html
+!reports/qc_demografia_poblacion/**
 
 # ============================================================
 # 5) Datos derivados grandes o regenerables
@@ -90,6 +92,8 @@ data/final/**
 !data/raw/
 !data/raw/inei_population/
 !data/raw/inei_population/**
+!data/raw/external_benchmarks/
+!data/raw/external_benchmarks/**
 
 # Si hubiera basura temporal dentro de raw, excluirla:
 data/raw/**/~$*
@@ -113,6 +117,8 @@ data/raw/**/*.bak
 
 !scripts/
 !scripts/**/*.R
+!maestros/
+!maestros/**/*.md
 
 # ============================================================
 # 10) Documentación raíz y estructura (SÍ versionar)
@@ -147,5 +153,9 @@ data/raw/**/*.bak
 !config/**/*.yaml
 !data/_catalog/**/*.csv
 !data/raw/inei_population/**
+!data/raw/external_benchmarks/**
 !README.md
 !README.qmd
+!reports/method-report.html
+!reports/qc_demografia_poblacion/**
+!maestros/**/*.md

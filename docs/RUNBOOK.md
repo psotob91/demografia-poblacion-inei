@@ -6,7 +6,12 @@ This document explains how to execute, validate, and debug the repository.
 
 ## Recommended execution order
 
-Current expected script order:
+Official base entrypoint:
+
+1. `scripts/run_preflight_checks.R`
+2. `scripts/run_pipeline.R --profile full --clean-first`
+
+Canonical step order inside the pipeline:
 
 1. `scripts/01_ingesta_raw_inei.R`
 2. `scripts/02_normaliza_long_omop.R`
@@ -15,6 +20,11 @@ Current expected script order:
 5. `scripts/05_build_population_view_hierarchical.R`
 6. `scripts/99_qc_global.R`
 7. `scripts/99_qc_global_hierarchical.R`
+8. `scripts/96_generate_table_dictionaries.R`
+9. `scripts/97_validate_dictionary_coverage.R`
+10. `scripts/98_contract_fingerprint_post.R`
+11. `scripts/94_render_method_report.R`
+12. `scripts/95_build_qc_demografia_reports.R`
 
 ## Pre-run checks
 
@@ -22,6 +32,7 @@ Before running:
 - confirm working directory is repository root;
 - confirm required packages are installed;
 - confirm raw INEI files exist in the expected raw folder;
+- confirm the local benchmark `data/raw/external_benchmarks/peru_life_table_all_years_closed_80_109.csv` exists;
 - confirm config masters and YAML specs are present;
 - confirm write permissions for staging, final, QC, and reports folders.
 
@@ -42,7 +53,7 @@ Before modifying code:
 
 Run scripts in the official order from repository root.
 
-If a master script is later created, it should become the preferred entry point and this document should be updated.
+The repo is now expected to use `run_pipeline.R` as its preferred entry point.
 
 ## Post-run validation
 
@@ -52,6 +63,21 @@ After running:
 - verify QC outputs were generated;
 - compare post-run output against baseline if this was a refactor or audit task;
 - verify report rendering if applicable.
+
+## Optional cross-repo coherence pass
+
+If a valid mortality snapshot exists at the explicitly configured path for `crossrepo_death_110plus_snapshot` or `DPG_CROSSREPO_DEATH_110PLUS_SNAPSHOT`, the demography pipeline performs an additional contractual guard-rail for `110+`. The base build does not auto-discover sibling repositories anymore.
+
+Recommended order in a multi-repo execution:
+
+1. optionally refresh the local benchmark from `tabla-mortalidad-peru`
+2. run `demografia-poblacion-inei` base
+3. run `mortalidad-causa-especifica`
+4. export `death_110plus_summary.parquet`
+5. rerun `demografia-poblacion-inei` from the tail-building step onward
+6. rerun only downstream mortality steps that consume final population
+
+If the snapshot is absent, demography runs normally and must report `crossrepo_110plus_qc = skipped_no_snapshot`.
 
 ## Report rendering
 

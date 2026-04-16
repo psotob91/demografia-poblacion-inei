@@ -1,0 +1,14 @@
+dataset_id,version,run_id,table_name,column_name,label,description,data_type,units,allow_na,is_key,n_missing,pct_missing,observed_min,observed_max,example_values
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_crossrepo_110plus_coherence,year_id,Año calendario,Año calendario de la estimación.,integer,,FALSE,FALSE,0,0,1995,2030,1995|1996|1997|1998|1999
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_crossrepo_110plus_coherence,sex_id,Sexo,Identificador OMOP-like de sexo usado por el proyecto.,integer,,FALSE,FALSE,0,0,8507,8532,8507|8532
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_crossrepo_110plus_coherence,location_id,Ubicación,Identificador de ubicación del proyecto.,integer,,FALSE,FALSE,0,0,0,25,0|1|2|3|4
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_crossrepo_110plus_coherence,death_count_110plus_observed,death_count_110plus_observed,death_count_110plus_observed,integer,,FALSE,FALSE,0,0,0,0,0
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_crossrepo_110plus_coherence,has_death_110plus_observed,has_death_110plus_observed,has_death_110plus_observed,logical,,FALSE,FALSE,0,0,,,FALSE
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_crossrepo_110plus_coherence,population_110plus_contract,population_110plus_contract,population_110plus_contract,integer,,FALSE,FALSE,0,0,0,136,0|1|2|3|4
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_crossrepo_110plus_coherence,coherence_floor_required,coherence_floor_required,coherence_floor_required,logical,,FALSE,FALSE,0,0,,,FALSE
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_crossrepo_110plus_coherence,coherence_floor_applied,coherence_floor_applied,coherence_floor_applied,logical,,FALSE,FALSE,0,0,,,FALSE
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_crossrepo_110plus_coherence,mass_adjustment_from_crossrepo_qc,mass_adjustment_from_crossrepo_qc,mass_adjustment_from_crossrepo_qc,integer,,FALSE,FALSE,0,0,0,0,0
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_crossrepo_110plus_coherence,crossrepo_110plus_qc_status,crossrepo_110plus_qc_status,crossrepo_110plus_qc_status,character,,FALSE,FALSE,0,0,,,skipped_no_snapshot
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_crossrepo_110plus_coherence,source_dataset_version,source_dataset_version,source_dataset_version,logical,,TRUE,FALSE,1872,100,,,""
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_crossrepo_110plus_coherence,source_run_id,source_run_id,source_run_id,logical,,TRUE,FALSE,1872,100,,,""
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_crossrepo_110plus_coherence,flag_incoherent,flag_incoherent,flag_incoherent,logical,,FALSE,FALSE,0,0,,,FALSE

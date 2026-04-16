@@ -1,0 +1,3 @@
+dataset_id,version,run_id,table_name,column_name,label,description,data_type,units,allow_na,is_key,n_missing,pct_missing,observed_min,observed_max,example_values
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_hierarchical_missing_required,required_column,required_column,required_column,character,,FALSE,FALSE,0,0,,,year_id|age|sex_id|location_id|population
+inei_population_1995_2030,v1.0.0,20260416_020030,qc_hierarchical_missing_required,exists,exists,exists,logical,,FALSE,FALSE,0,0,,,TRUE

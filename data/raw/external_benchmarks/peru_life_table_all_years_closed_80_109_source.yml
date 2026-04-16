@@ -1,0 +1,15 @@
+benchmark_id: peru_life_table_all_years_closed_80_109
+source_repo: tabla-mortalidad-peru
+source_path: C:/Users/Usuario/OneDrive/Consultorias_Personales/Carga-CDC-Peru-2023/carga-enfermedad-peru-2018-2024/tabla-mortalidad-peru/data/final/life_table_mortality/all_years/single_age/ref_life_table_mortality_single_age.csv
+extracted_at: 2026-04-16 00:39:48
+coverage:
+  year_id: 1995:2025
+  location_id: '1:25'
+  sex_id:
+  - 8507
+  - 8532
+  age: 80:109
+semantics:
+  open_interval_used: no
+  note: Benchmark local cerrado 80:109 derivado desde tabla-mortalidad-peru. La fila
+    abierta 110+ no se copia ni se usa como input de modelamiento.

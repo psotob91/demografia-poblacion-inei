@@ -18,7 +18,7 @@ constraints:
     allow_na: false
 
   location_id:
-    allowed_values: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,9000]
+    allowed_values: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,9000]
     allow_na: false
 
   population: {min: 0, allow_na: false}
@@ -26,27 +26,42 @@ constraints:
 policy:
   allow_total_sex: false
   allow_total_age: false
-  age_definition: "Edad simple (años cumplidos)."
-  year_definition: "Año calendario (year_id)."
+  age_definition: "Edad simple 0-109; age=110 representa el grupo abierto 110+ en el output contractual y en la vista jerarquica."
+  year_definition: "Ano calendario (year_id)."
   population_units: "persons"
-  location_definition: "UBIGEO departamento (00=Perú; 01–25=departamento). Para distritos (ubigeo 6 dígitos), dept = substr(ubigeo,1,2)."
+  location_definition: "UBIGEO departamento (00=Peru; 01-25=departamento)."
   extrapolation:
     enabled: true
-    ages_extended_to: 110
-    fit_age_min: 70
-    fit_age_max: 79
-    spline_df: 4
-    method: "log(pop) ~ ns(age, df=4) fit 70-79; monotone 70+"
+    ages_extended_to: 125
+    internal_age_max: 125
+    contract_terminal_age: 110
+    contract_terminal_age_open: true
+    contract_terminal_age_label: "110+"
+    internal_tail_type: "expected_counts"
+    internal_tail_cap_125_per_sex_per_year: 1.0
+    fit_age_min: 95
+    fit_age_max: 109
+    benchmark_source_priority: "1) benchmark local desacoplado derivado de tabla-mortalidad-peru all_years single_age para regiones 1-25 y anos 1995-2025; 2) benchmark nacional implicito construido agregando regiones oficiales para location_id=0 en 1995-2025; 3) fallback UN WPP 2019 Peru para anos sin cobertura oficial, actualmente 2026-2030."
+    benchmark_source_active: "Benchmark local desacoplado cerrado 80-109 para regiones 1-25 en 1995-2025 + nacional implicito por agregacion regional; fallback UN WPP 2019 Peru solo para 2026-2030."
+    method: "Usa la masa observada 80 y + por estrato. Para regiones 1-25 en 1995-2025 usa el benchmark local desacoplado derivado de tabla-mortalidad-peru solo en edades cerradas 80-109; excluye explicitamente la fila abierta 110+ y extiende 110-125 con Kannisto ajustado sobre qx/mx cerradas 95-109. Para location_id=0 en 1995-2025 construye una schedule implicita agregando las regiones oficiales ya corregidas ponderadas por la masa observada 80+. Para 2026-2030 usa fallback Peru/WPP con la misma extension Kannisto. Convierte cada schedule 80-125 en pesos de supervivencia, reparte la masa 80 y +, integeriza 80-109 y 110+ con Hamilton, exporta 0-109 y age=110 como 110+, y la vista jerarquica reemplaza 0 por 9000."
+  crossrepo_qc:
+    optional_snapshot_key: "crossrepo_death_110plus_snapshot"
+    policy: "minimum_110plus_floor"
+    enabled_when_snapshot_exists: true
+    method: "La vista jerarquica hereda el contractual final ya reconciliado. Si el snapshot cruzado exige piso minimo 110+, el ajuste se aplica antes de construir la vista jerarquica y 9000 agrega ese resultado final."
+  hierarchical_view:
+    base_locations: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]
+    national_additive_location_id: 9000
 
 dictionary:
   year_id:
-    label: "Año calendario"
+    label: "Ano calendario"
     units: null
     omop_domain_id: "observation"
     is_omop_concept_id: false
 
   age:
-    label: "Edad simple (años cumplidos)"
+    label: "Edad 0-109 simple; 110 = 110+"
     units: "years"
     omop_domain_id: "observation"
     is_omop_concept_id: false
@@ -59,14 +74,13 @@ dictionary:
     is_omop_concept_id: true
 
   location_id:
-    label: "Ubicación (UBIGEO departamento: 00=Perú; 01–25=departamento)"
+    label: "Ubicacion (1-25 deptos, 9000 nacional aditivo)"
     units: null
-    # allowed_values_label se auto-completa desde config/maestro_location_dept.csv
     omop_domain_id: "observation"
     is_omop_concept_id: false
 
   population:
-    label: "Población (conteo de personas)"
+    label: "Poblacion (conteo de personas)"
     units: "persons"
     omop_domain_id: "measurement"
     is_omop_concept_id: false

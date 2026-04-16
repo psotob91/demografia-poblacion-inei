@@ -1,0 +1,27 @@
+location_id,location_label,figure_path,figure_file
+1,Amazonas (1),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_1.png,tendencia_total_loc_1.png
+2,Ancash (2),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_2.png,tendencia_total_loc_2.png
+3,Apurimac (3),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_3.png,tendencia_total_loc_3.png
+4,Arequipa (4),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_4.png,tendencia_total_loc_4.png
+5,Ayacucho (5),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_5.png,tendencia_total_loc_5.png
+6,Cajamarca (6),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_6.png,tendencia_total_loc_6.png
+7,Callao (7),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_7.png,tendencia_total_loc_7.png
+8,Cusco (8),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_8.png,tendencia_total_loc_8.png
+9,Huancavelica (9),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_9.png,tendencia_total_loc_9.png
+10,Huanuco (10),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_10.png,tendencia_total_loc_10.png
+11,Ica (11),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_11.png,tendencia_total_loc_11.png
+12,Junin (12),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_12.png,tendencia_total_loc_12.png
+13,La Libertad (13),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_13.png,tendencia_total_loc_13.png
+14,Lambayeque (14),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_14.png,tendencia_total_loc_14.png
+15,Lima (15),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_15.png,tendencia_total_loc_15.png
+16,Loreto (16),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_16.png,tendencia_total_loc_16.png
+17,Madre de Dios (17),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_17.png,tendencia_total_loc_17.png
+18,Moquegua (18),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_18.png,tendencia_total_loc_18.png
+19,Pasco (19),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_19.png,tendencia_total_loc_19.png
+20,Piura (20),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_20.png,tendencia_total_loc_20.png
+21,Puno (21),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_21.png,tendencia_total_loc_21.png
+22,San Martin (22),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_22.png,tendencia_total_loc_22.png
+23,Tacna (23),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_23.png,tendencia_total_loc_23.png
+24,Tumbes (24),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_24.png,tendencia_total_loc_24.png
+25,Ucayali (25),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_25.png,tendencia_total_loc_25.png
+9000,Peru total (9000),reports/qc_demografia_poblacion/modules/coherencia-demografica/figures/tendencias/tendencia_total_loc_9000.png,tendencia_total_loc_9000.png

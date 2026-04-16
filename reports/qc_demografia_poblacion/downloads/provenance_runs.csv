@@ -1,0 +1,6 @@
+run_id,dataset_id,version,started_at,finished_at,status,message
+20260416_020008,inei_population_1995_2030,v1.0.0,2026-04-16 02:00:08,2026-04-16 02:00:12,success,
+20260416_020017,inei_population_1995_2030,v1.0.0,2026-04-16 02:00:17,2026-04-16 02:00:17,success,
+20260416_020030,inei_population_1995_2030,v1.0.0,2026-04-16 02:00:30,2026-04-16 02:00:33,success,
+portal-qc-demografia-20260416-020111,inei_population_1995_2030,v1.0.0,2026-04-16 02:29:26,2026-04-16 02:29:26,success,
+portal-qc-demografia-20260416-023126,inei_population_1995_2030,v1.0.0,2026-04-16 02:37:56,2026-04-16 02:37:57,success,

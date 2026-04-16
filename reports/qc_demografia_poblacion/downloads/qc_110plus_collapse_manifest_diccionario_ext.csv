@@ -1,0 +1,3 @@
+dataset_id,version,run_id,table_name,column_name,label,description,data_type,units,allow_na,is_key,n_missing,pct_missing,observed_min,observed_max,example_values
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_110plus_collapse_manifest,figure_path,figure_path,figure_path,character,,FALSE,FALSE,0,0,,,reports/qc_demografia_poblacion/modules/pipeline-qc/figures/colapso_110plus/qc_110plus_collapse_exact.png
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_110plus_collapse_manifest,figure_file,figure_file,figure_file,character,,FALSE,FALSE,0,0,,,qc_110plus_collapse_exact.png

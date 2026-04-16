@@ -1,0 +1,8 @@
+dataset_id,version,run_id,table_name,column_name,label,description,data_type,units,allow_na,is_key,n_missing,pct_missing,observed_min,observed_max,example_values
+inei_population_1995_2030,v1.0.0,20260416_020030,provenance_runs,run_id,run_id,run_id,character,,FALSE,FALSE,0,0,,,20260416_020008|20260416_020017|20260416_020030
+inei_population_1995_2030,v1.0.0,20260416_020030,provenance_runs,dataset_id,dataset_id,dataset_id,character,,FALSE,FALSE,0,0,,,inei_population_1995_2030
+inei_population_1995_2030,v1.0.0,20260416_020030,provenance_runs,version,version,version,character,,FALSE,FALSE,0,0,,,v1.0.0
+inei_population_1995_2030,v1.0.0,20260416_020030,provenance_runs,started_at,Inicio,Timestamp de inicio.,datetime,,FALSE,FALSE,0,0,,,2026-04-16 02:00:08|2026-04-16 02:00:17|2026-04-16 02:00:30
+inei_population_1995_2030,v1.0.0,20260416_020030,provenance_runs,finished_at,finished_at,finished_at,datetime,,TRUE,FALSE,1,33.3333,,,2026-04-16 02:00:12|2026-04-16 02:00:17
+inei_population_1995_2030,v1.0.0,20260416_020030,provenance_runs,status,Estado,Estado de la operación.,character,,FALSE,FALSE,0,0,,,success|running
+inei_population_1995_2030,v1.0.0,20260416_020030,provenance_runs,message,message,message,logical,,TRUE,FALSE,3,100,,,""

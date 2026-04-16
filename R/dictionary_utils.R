@@ -122,3 +122,68 @@ enrich_dict_with_stats <- function(dict, data) {
   
   merge(dict2, stats, by = "column_name", all.x = TRUE, sort = FALSE)
 }
+
+infer_data_type <- function(x) {
+  if (is.integer(x)) return("integer")
+  if (is.numeric(x)) return("numeric")
+  if (is.logical(x)) return("logical")
+  if (inherits(x, "Date")) return("date")
+  if (inherits(x, "POSIXt")) return("datetime")
+  if (is.character(x)) return("character")
+  paste(class(x), collapse = "|")
+}
+
+make_table_dictionary <- function(data,
+                                  table_name,
+                                  dataset_id = "inei_population_1995_2030",
+                                  version = "v1.0.0",
+                                  run_id = NA_character_,
+                                  key_cols = character(),
+                                  metadata = NULL) {
+  dt <- as.data.table(data)
+  meta <- if (is.null(metadata)) data.table(column_name = character()) else as.data.table(metadata)
+  if (nrow(meta) > 0 && !"column_name" %in% names(meta)) {
+    stop("metadata must include column_name")
+  }
+  for (nm in c("label", "description", "units", "allow_na")) {
+    if (!nm %in% names(meta)) meta[, (nm) := NA]
+  }
+  
+  out <- rbindlist(lapply(names(dt), function(col) {
+    x <- dt[[col]]
+    m <- meta[column_name == col]
+    label <- if (nrow(m) > 0 && !is.na(m$label[1])) as.character(m$label[1]) else col
+    description <- if (nrow(m) > 0 && !is.na(m$description[1])) as.character(m$description[1]) else col
+    units <- if (nrow(m) > 0 && !is.na(m$units[1])) as.character(m$units[1]) else NA_character_
+    allow_na <- if (nrow(m) > 0 && !is.na(m$allow_na[1])) as.logical(m$allow_na[1]) else anyNA(x)
+    ex <- unique(x[!is.na(x)])
+    ex <- head(ex, 5)
+    
+    data.table(
+      dataset_id = dataset_id,
+      version = version,
+      run_id = run_id,
+      table_name = table_name,
+      column_name = col,
+      label = label,
+      description = description,
+      data_type = infer_data_type(x),
+      units = units,
+      allow_na = allow_na,
+      is_key = col %in% key_cols,
+      n_missing = sum(is.na(x)),
+      pct_missing = round(100 * mean(is.na(x)), 4),
+      observed_min = suppressWarnings(if (is.numeric(x) || is.integer(x)) min(x, na.rm = TRUE) else NA_real_),
+      observed_max = suppressWarnings(if (is.numeric(x) || is.integer(x)) max(x, na.rm = TRUE) else NA_real_),
+      example_values = paste(ex, collapse = "|")
+    )
+  }), fill = TRUE)
+  
+  out[]
+}
+
+dictionary_path_for_table <- function(table_path) {
+  ext <- tools::file_ext(table_path)
+  stem <- sub(paste0("\\.", ext, "$"), "", table_path)
+  paste0(stem, "_diccionario_ext.csv")
+}

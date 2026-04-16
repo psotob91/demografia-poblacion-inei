@@ -10,9 +10,11 @@ author: "Percy Soto Becerra"
 
 Pipeline reproducible en **R** para construir un dataset canónico de **población por edad simple, sexo y departamento** a partir de proyecciones públicas del **INEI**, con una salida analítica en formato **OMOP-like / results-like**, control de calidad automatizado y trazabilidad completa de artefactos.
 
+El repositorio base es **autocontenido**: puede construir el contractual final sin depender runtime de repos hermanos. El benchmark oficial de cola alta vive localmente en `data/raw/external_benchmarks/` como copia desacoplada y versionada.
+
 ## Abstract
 
-Este repositorio implementa un flujo reproducible para transformar insumos públicos del Instituto Nacional de Estadística e Informática del Perú (INEI) en un dataset canónico de conteos poblacionales. El pipeline estandariza archivos fuente por departamento, armoniza sexo y ubicación con maestros explícitos, genera una tabla final por **año calendario**, **edad simple (0–110)**, **sexo** y **location_id**, y produce una vista jerárquica adicional donde el nacional es una **suma exacta de departamentos**. El repositorio incorpora validación estructural contra especificaciones YAML, controles detectivos de duplicados, faltantes, no negatividad, monotonicidad de cola y consistencia nacional-versus-departamentos, además de un catálogo de artefactos con `run_id`, hash y metadatos de corrida.
+Este repositorio implementa un flujo reproducible para transformar insumos públicos del Instituto Nacional de Estadística e Informática del Perú (INEI) en un dataset canónico de conteos poblacionales. El pipeline estandariza archivos fuente por departamento, armoniza sexo y ubicación con maestros explícitos, genera una tabla final por **año calendario**, **edad contractual 0–109 y una última fila 110+**, **sexo** y **location_id**, y produce una vista jerárquica adicional donde el nacional es una **suma exacta de departamentos**. El repositorio incorpora validación estructural contra especificaciones YAML, controles detectivos de duplicados, faltantes, no negatividad, monotonicidad de cola y consistencia nacional-versus-departamentos, además de un catálogo de artefactos con `run_id`, hash y metadatos de corrida.
 
 ## Research-purpose contribution
 
@@ -95,6 +97,15 @@ Los archivos raw se descargan desde publicaciones digitales del INEI y deben man
 
 ## Execution order
 
+### Official entrypoint
+
+```powershell
+Rscript .\scripts\run_preflight_checks.R
+Rscript .\scripts\run_pipeline.R --profile full --clean-first
+```
+
+### Canonical step order
+
 ```r
 source("scripts/01_ingesta_raw_inei.R")
 source("scripts/02_normaliza_long_omop.R")
@@ -115,6 +126,26 @@ El pipeline implementa, entre otros, los siguientes chequeos:
 - monotonicidad de la cola etaria en edades altas;
 - comparación entre nacional oficial y suma de departamentos;
 - verificación estricta del nacional aditivo `9000` en la vista jerárquica.
+
+## Cross-repo coherence
+
+De forma opcional, este repositorio puede consumir un snapshot agregado y no sensible proveniente de `mortalidad-causa-especifica`:
+
+- `data/final/crossrepo_snapshots/death_110plus_summary.parquet`
+
+Ese snapshot resume muertes observadas `age >= 110` por `year_id`, `sex_id` y `location_id`. El build base no lo busca por rutas relativas a otros repos; solo se activa si la ruta se declara explicitamente en `config/runtime_paths.yml` o via `DPG_CROSSREPO_DEATH_110PLUS_SNAPSHOT`. Si existe y es valido, el pipeline aplica un guard-rail contractual minimo:
+
+- si hay al menos una muerte observada `110+` y la poblacion contractual `110+` habria quedado en `0`, el output final eleva `age = 110` a `1`;
+- el ajuste se registra como evidencia QC (`coherence_floor_applied`, `mass_adjustment_from_crossrepo_qc`);
+- esta regla no reemplaza el modelo principal de cola y no modifica edades `0:109`.
+
+## Local high-age benchmark
+
+El benchmark oficial activo para edades altas se consume desde:
+
+- `data/raw/external_benchmarks/peru_life_table_all_years_closed_80_109.csv`
+
+Ese archivo deriva de `tabla-mortalidad-peru`, usa solo edades cerradas `80:109`, excluye la fila abierta `110+` y permite que el build base siga siendo autocontenido.
 
 ## Dependencies
 

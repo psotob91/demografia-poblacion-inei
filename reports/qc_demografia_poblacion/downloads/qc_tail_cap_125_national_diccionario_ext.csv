@@ -1,0 +1,7 @@
+dataset_id,version,run_id,table_name,column_name,label,description,data_type,units,allow_na,is_key,n_missing,pct_missing,observed_min,observed_max,example_values
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_tail_cap_125_national,year_id,year_id,year_id,integer,,FALSE,TRUE,0,0,1995,2030,1995|1996|1997|1998|1999
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_tail_cap_125_national,sex_id,sex_id,sex_id,integer,,FALSE,TRUE,0,0,8507,8532,8507|8532
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_tail_cap_125_national,national_internal_age125,national_internal_age125,national_internal_age125,numeric,,FALSE,FALSE,0,0,0,0.000128872820209433,0|8.07559712637639e-11|1.01221672409942e-10|1.28661699588486e-10|1.61592962237438e-10
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_tail_cap_125_national,cap_value,cap_value,cap_value,integer,,FALSE,FALSE,0,0,1,1,1
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_tail_cap_125_national,diff,diff,diff,numeric,,FALSE,FALSE,0,0,-1,-0.999871127179791,-1|-0.999999999919244|-0.999999999898778|-0.999999999871338|-0.999999999838407
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_tail_cap_125_national,flag_diff,flag_diff,flag_diff,logical,,FALSE,FALSE,0,0,,,FALSE

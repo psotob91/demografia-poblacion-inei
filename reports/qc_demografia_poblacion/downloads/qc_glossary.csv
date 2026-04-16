@@ -1,0 +1,28 @@
+term,meaning,reader_action
+PK,"Llave primaria logica: year_id, age, sex_id y location_id.",Debe ser unica en el output final.
+content_sha256,Hash deterministico de contenido tras ordenar por PK; es la prueba principal de compatibilidad.,Usarlo para mostrar si el contenido cambio; en esta iteracion el cambio es esperable por la nueva semantica 110+.
+file_md5,Checksum del archivo fisico parquet.,Sirve como evidencia secundaria de estabilidad fisica del parquet.
+location_id=0,Nacional oficial proveniente de la fuente INEI y preservado en el output contractual.,Usarlo para compatibilidad downstream historica.
+location_id=9000,Nacional aditivo construido como suma exacta de departamentos 1-25.,Usarlo cuando se necesita consistencia jerarquica nacional-departamentos.
+observed,Valor observado normalizado desde el staging OMOP-like antes de extrapolar edades altas.,Compararlo contra final para confirmar que no se altero lo observado.
+final,Valor publicado en el parquet contractual final.,Revisar si coincide con observado o si fue extrapolado.
+extrapolated,Valor generado por el modelo interno de extrapolacion para edades sin edad simple observada.,Revisar forma de curva y ausencia de negativos o saltos imposibles.
+110+,"Grupo abierto contractual representado por age=110, construido como suma exacta de la cola contractual 110-125 despues del redondeo Hamilton.",Confirmar que coincida exactamente con el puente contractual 110+ despues del redondeo Hamilton.
+observed_preserved,El valor observado y final coinciden luego de redondeo.,No requiere accion.
+observed_changed,El valor observado y final difieren; requiere revision.,Revisar por que cambio.
+missing_observed,No hay observacion de edad simple comparable para esa fila final.,Esperado para la cola modelada y el colapso contractual 110+; revisar si aparece en edades observadas 0-79.
+diff_abs,Diferencia absoluta entre dos conteos poblacionales.,Interpretar signo y magnitud.
+flag_diff,Indicador booleano de diferencia detectada por el QC.,Filtrar filas TRUE.
+n_tail_increase_flags,Conteo de estratos con aumento en la cola de edades altas.,Abrir tomo de extrapolacion si es mayor que cero.
+expected_counts,Conteos esperados internos que pueden incluir fracciones menores que 1 en edades extremas.,Usarlo para interpretar la cola interna como masa esperada y no como conteo observado exacto.
+mass_preserved_80plus,La suma interna 80-125 coincide exactamente con la masa observada del grupo abierto 80 y +.,"Si falla, la reasignacion de masa 80 y + esta mal."
+cap_125,Tope nacional por sexo y ano: a los 125 anos no puede haber mas de 1.0 persona esperada.,"Si falla, la cola extrema nacional sigue siendo implausible."
+largest_remainder_rounding,Metodo de redondeo entero que preserva la suma total del estrato.,Usarlo para entender por que el contractual sigue siendo entero aunque la cola interna sea numerica.
+hierarchical,Vista de salida que reemplaza el nacional oficial 0 por el nacional aditivo 9000.,Usar para analisis que requiere aditividad.
+additive_national,Nacional calculado como suma de departamentos.,Confirmar que coincida con suma departamental.
+qc_state,Etiqueta de estado para interpretar la comparacion observado-final.,Leer antes de filtrar o resumir filas.
+value_flag,"Etiqueta de seguridad para valores cero, negativos o aumentos en cola.",Filtrar todo valor distinto de none.
+coherence_floor,Piso minimo contractual aplicado cuando existe al menos una muerte observada en 110+ y la poblacion contractual 110+ habria quedado en cero.,Usarlo para entender por que un 110+ contractual puede pasar de 0 a 1 sin cambiar el metodo principal de cola.
+cross-repo QC,Chequeo de coherencia entre este repo y mortalidad-causa-especifica mediante un snapshot agregado y no sensible.,"Interpretarlo como una capa de QC y reconciliacion, no como insumo primario del benchmark demografico."
+death_110plus_summary,"Snapshot agregado por year_id, sex_id y location_id con muertes observadas en 110+ ya armonizadas a la misma convencion contractual.",Verificar si existio y si su estructura fue valida antes de aplicar cualquier piso.
+mass_adjustment_from_crossrepo_qc,Masa entera anadida al contractual 110+ por el piso minimo de coherencia cruzada.,Cuantificar el impacto contractual visible de la reconciliacion con mortalidad.

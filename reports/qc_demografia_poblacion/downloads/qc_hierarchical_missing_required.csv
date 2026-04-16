@@ -1,0 +1,6 @@
+required_column,exists
+year_id,TRUE
+age,TRUE
+sex_id,TRUE
+location_id,TRUE
+population,TRUE

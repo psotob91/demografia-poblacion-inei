@@ -1,0 +1,18 @@
+dataset_id,version,run_id,table_name,column_name,label,description,data_type,units,allow_na,is_key,n_missing,pct_missing,observed_min,observed_max,example_values
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,portal_build_summary,run_id,run_id,run_id,character,,FALSE,FALSE,0,0,,,portal-qc-demografia-20260416-023822
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,portal_build_summary,generated_at,generated_at,generated_at,datetime,,FALSE,FALSE,0,0,,,2026-04-16 03:06:22
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,portal_build_summary,portal_root,portal_root,portal_root,character,,FALSE,FALSE,0,0,,,reports/qc_demografia_poblacion
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,portal_build_summary,contract_rows,contract_rows,contract_rows,integer,,FALSE,FALSE,0,0,207792,207792,207792
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,portal_build_summary,hierarchical_rows,hierarchical_rows,hierarchical_rows,integer,,FALSE,FALSE,0,0,207792,207792,207792
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,portal_build_summary,curve_figures,curve_figures,curve_figures,integer,,FALSE,FALSE,0,0,936,936,936
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,portal_build_summary,trend_figures,trend_figures,trend_figures,integer,,FALSE,FALSE,0,0,26,26,26
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,portal_build_summary,heatmap_figures,heatmap_figures,heatmap_figures,integer,,FALSE,FALSE,0,0,26,26,26
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,portal_build_summary,qc_observed_final_figures,qc_observed_final_figures,qc_observed_final_figures,integer,,FALSE,FALSE,0,0,1872,1872,1872
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,portal_build_summary,qc_extrapolation_figures,qc_extrapolation_figures,qc_extrapolation_figures,integer,,FALSE,FALSE,0,0,1872,1872,1872
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,portal_build_summary,qc_110plus_collapse_figures,qc_110plus_collapse_figures,qc_110plus_collapse_figures,integer,,FALSE,FALSE,0,0,1,1,1
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,portal_build_summary,qc_national_figures,qc_national_figures,qc_national_figures,integer,,FALSE,FALSE,0,0,72,72,72
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,portal_build_summary,contract_ok,contract_ok,contract_ok,logical,,FALSE,FALSE,0,0,,,TRUE
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,portal_build_summary,hierarchical_ok,hierarchical_ok,hierarchical_ok,logical,,FALSE,FALSE,0,0,,,TRUE
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,portal_build_summary,dictionary_coverage_ok,dictionary_coverage_ok,dictionary_coverage_ok,logical,,FALSE,FALSE,0,0,,,TRUE
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,portal_build_summary,fingerprint_structure_ok,fingerprint_structure_ok,fingerprint_structure_ok,logical,,TRUE,FALSE,1,100,,,""
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,portal_build_summary,fingerprint_content_match,fingerprint_content_match,fingerprint_content_match,logical,,TRUE,FALSE,1,100,,,""

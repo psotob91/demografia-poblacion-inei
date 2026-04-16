@@ -1,0 +1,8 @@
+dataset_id,version,run_id,table_name,column_name,label,description,data_type,units,allow_na,is_key,n_missing,pct_missing,observed_min,observed_max,example_values
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_tail_mass_80plus_exact,year_id,year_id,year_id,integer,,FALSE,TRUE,0,0,1995,2030,1995|1996|1997|1998|1999
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_tail_mass_80plus_exact,sex_id,sex_id,sex_id,integer,,FALSE,TRUE,0,0,8507,8532,8507|8532
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_tail_mass_80plus_exact,location_id,location_id,location_id,integer,,FALSE,TRUE,0,0,0,25,0|1|2|3|4
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_tail_mass_80plus_exact,pop_internal_80plus,pop_internal_80plus,pop_internal_80plus,integer,,FALSE,FALSE,0,0,62,521031,61776|631|3393|1336|3427
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_tail_mass_80plus_exact,pop_observed_80plus,pop_observed_80plus,pop_observed_80plus,integer,,FALSE,FALSE,0,0,62,521031,61776|631|3393|1336|3427
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_tail_mass_80plus_exact,diff,diff,diff,numeric,,FALSE,FALSE,0,0,-2.91038304567337e-11,5.82076609134674e-11,0|-4.54747350886464e-13|-5.6843418860808e-14|2.27373675443232e-13|1.13686837721616e-13
+inei_population_1995_2030,v1.0.0,portal-qc-demografia-20260416-023822,qc_tail_mass_80plus_exact,flag_diff,flag_diff,flag_diff,logical,,FALSE,FALSE,0,0,,,FALSE

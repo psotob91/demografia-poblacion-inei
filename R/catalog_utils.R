@@ -129,6 +129,7 @@ register_run_start <- function(run_id, dataset_id, version) {
 
 register_run_finish <- function(run_id, status = c("success","failed"), message = NA_character_) {
   status <- match.arg(status)
+  status_value <- status
   p <- catalog_paths()
   
   runs <- fread(p$runs_csv)
@@ -139,7 +140,7 @@ register_run_finish <- function(run_id, status = c("success","failed"), message 
   
   runs[idx, `:=`(
     finished_at = format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
-    status = status,
+    status = status_value,
     message = as.character(message)
   )]
   
