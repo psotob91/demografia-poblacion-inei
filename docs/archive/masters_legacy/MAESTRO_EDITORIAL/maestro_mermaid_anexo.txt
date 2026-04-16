@@ -1,0 +1,264 @@
+MAESTRO_MERMAID_ANEXO
+Sistema de diseño para diagramas metodológicos en estudios de carga de enfermedad
+
+---
+
+0. PROPÓSITO
+
+Este documento define las reglas de diseño para todos los diagramas Mermaid del proyecto de carga de enfermedad.
+
+Su objetivo es garantizar coherencia visual, claridad metodológica y consistencia entre módulos, incluyendo demografía, mortalidad empírica, corrección de mortalidad, causas de muerte, AVP, AVD y tablas de vida estándar.
+
+Los diagramas deben cumplir una función explicativa. No deben ser decorativos.
+
+---
+
+1. PRINCIPIOS GENERALES
+
+El estilo debe ser sobrio, académico y consistente con documentos técnicos de salud pública.
+
+Cada diagrama debe responder a una sola idea principal. Si intenta explicar múltiples procesos complejos, debe dividirse.
+
+El lector debe poder identificar rápidamente el tipo de elemento representado sin releer la figura.
+
+Debe mantenerse la misma semántica visual en todo el documento.
+
+---
+
+2. SISTEMA DE COLORES
+
+Usar colores suaves y consistentes. No usar colores saturados ni gradientes.
+
+Datos observados o empíricos
+
+* Fondo: #D6EAF8
+* Borde: #1B4F72
+
+Procesos metodológicos
+
+* Fondo: #FCF3CF
+* Borde: #B7950B
+
+Resultados corregidos o transformados
+
+* Fondo: #D5F5E3
+* Borde: #1E8449
+
+Insumos estructurales o de referencia
+
+* Fondo: #FDEDEC
+* Borde: #C0392B
+
+Resultados finales
+
+* Fondo: #E8DAEF
+* Borde: #6C3483
+
+Controles de calidad
+
+* Fondo: #EBF5FB
+* Borde: #2874A6
+
+Reglas:
+
+* No usar más de cinco categorías en una figura.
+* Si se requieren más, dividir el diagrama.
+* Mantener la misma codificación en todo el documento.
+
+---
+
+3. FORMAS
+
+Círculo o elipse
+Uso: estados o conteos
+Ejemplo: muertes observadas, muertes corregidas
+
+Rectángulo
+Uso: variables derivadas
+Ejemplo: tasas, indicadores intermedios
+
+Diamante
+Uso: procesos o decisiones metodológicas
+Ejemplo: corrección, redistribución
+
+Paralelogramo
+Uso: insumos externos o referencia
+Ejemplo: población, tablas de vida
+
+Rectángulo con bordes redondeados
+Uso: módulos o etapas
+Ejemplo: armonización, integración
+
+Regla:
+No usar más de tres o cuatro formas en una misma figura.
+
+---
+
+4. TEXTO EN NODOS
+
+El texto debe ser breve y claro.
+
+* Máximo dos a seis palabras por línea
+* Usar saltos de línea con <br/>
+* No usar párrafos dentro de nodos
+
+No usar:
+
+* Texto largo
+* Explicaciones completas
+* Lenguaje excesivamente técnico
+
+No usar negrita ni cursiva dentro de nodos.
+
+---
+
+5. DIRECCIÓN DEL FLUJO
+
+Preferir una sola dirección dominante.
+
+* Horizontal (LR): procesos analíticos
+* Vertical (TB): estructuras jerárquicas
+
+Evitar cruces de flechas.
+
+Si hay demasiadas intersecciones, dividir el diagrama.
+
+---
+
+6. TAMAÑO Y COMPLEJIDAD
+
+Un diagrama no debe exceder 8 a 10 nodos principales.
+
+Si el proceso es complejo:
+
+* Dividir en varias figuras
+* Separar vista general y detalle
+
+Regla:
+Un diagrama = una idea principal
+
+---
+
+7. USO DE SUBGRAPH
+
+Usar subgraph solo cuando existan módulos claros.
+
+Ejemplos:
+
+* Insumos
+* Procesamiento
+* Resultados
+
+No usar más de tres subgraphs.
+
+No usar subgraphs para decorar.
+
+---
+
+8. TÍTULOS DE FIGURAS
+
+Formato:
+
+Figura X. [Proceso descrito] y [propósito analítico]
+
+Ejemplos:
+
+* Flujo de transformación de muertes observadas a muertes corregidas para el cálculo de AVP
+* Proceso de armonización de población para uso como denominador
+
+Los títulos deben ser claros, no genéricos.
+
+---
+
+9. REGLAS POR MÓDULO
+
+Demografía
+
+* Destacar fuente, armonización, extensión de edad
+* Población como insumo estructural
+
+Mortalidad empírica
+
+* Destacar datos observados y tasas
+
+Corrección de mortalidad
+
+* Mostrar claramente el paso por tasas
+
+Causas de muerte
+
+* Mostrar reclasificación y redistribución
+
+Tablas de vida
+
+* Mostrar como insumo de referencia
+
+AVP
+
+* Mostrar muertes corregidas y tabla de vida
+
+AVD
+
+* Mostrar prevalencia, duración y pesos
+
+---
+
+10. PLANTILLA DE ESTILOS
+
+classDef observed fill:#D6EAF8,stroke:#1B4F72,color:#000;
+classDef process fill:#FCF3CF,stroke:#B7950B,color:#000;
+classDef corrected fill:#D5F5E3,stroke:#1E8449,color:#000;
+classDef structural fill:#FDEDEC,stroke:#C0392B,color:#000;
+classDef final fill:#E8DAEF,stroke:#6C3483,color:#000;
+classDef qc fill:#EBF5FB,stroke:#2874A6,color:#000;
+
+---
+
+11. PLANTILLA BASE
+
+flowchart LR
+
+A(("Dato observado")):::observed
+B["Transformación"]:::process
+C{{"Proceso metodológico"}}:::process
+D["Resultado corregido"]:::corrected
+E[/"Insumo estructural"/]:::structural
+F(("Resultado final")):::final
+
+A --> B
+B --> C
+C --> D
+E --> D
+D --> F
+
+---
+
+12. CONSISTENCIA ENTRE FIGURAS
+
+Mantener siempre la misma semántica visual.
+
+Si un color representa “corregido” en una figura, debe representar lo mismo en todas.
+
+No cambiar formas o colores arbitrariamente entre diagramas.
+
+---
+
+13. CUÁNDO NO USAR MERMAID
+
+No usar Mermaid cuando:
+
+* El diagrama es demasiado complejo
+* Existen múltiples relaciones cruzadas
+* Se pierde claridad visual
+
+En esos casos:
+
+* Simplificar
+* Dividir
+* O usar otra herramienta
+
+La prioridad es la legibilidad.
+
+---
+
+FIN DEL MAESTRO

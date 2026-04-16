@@ -1,0 +1,134 @@
+# ============================================================
+# demografia-poblacion-inei :: .gitignore
+# Release minimo:
+# - VERSIONAR: codigo, config, docs, maestros, raw publico y benchmark local
+# - IGNORAR: outputs regenerables, HTML generados, staging y catalogos
+# ============================================================
+
+# ============================================================
+# 1) R / RStudio
+# ============================================================
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+.Rprofile
+renv/
+
+renv/library/
+renv/staging/
+renv/python/
+renv/cache/
+!renv.lock
+
+# ============================================================
+# 2) Sistema operativo / editores
+# ============================================================
+.DS_Store
+Thumbs.db
+desktop.ini
+*~
+*.swp
+*.swo
+
+# ============================================================
+# 3) Logs / temporales / backups locales
+# ============================================================
+*.log
+*.tmp
+*.temp
+*.bak
+*.old
+*.orig
+tmp_local_backup/
+
+# ============================================================
+# 4) Documentos y renders regenerables
+# ============================================================
+*_files/
+.quarto/
+*.html
+*.pdf
+*.docx
+*.doc
+*.pptx
+*.ppt
+*.pptm
+
+!*.qmd
+!*.md
+!*.txt
+
+# ============================================================
+# 5) Datos regenerables
+# ============================================================
+data/derived/**
+data/final/**
+data/_catalog/**
+outputs/**
+
+# ============================================================
+# 6) Raw publico y benchmark desacoplado
+# ============================================================
+!data/raw/
+!data/raw/inei_population/
+!data/raw/inei_population/**
+!data/raw/external_benchmarks/
+!data/raw/external_benchmarks/**
+
+data/raw/**/~$*
+data/raw/**/*.tmp
+data/raw/**/*.bak
+
+# ============================================================
+# 7) Configuracion, codigo y maestros
+# ============================================================
+!config/
+!config/**/*.csv
+!config/**/*.yml
+!config/**/*.yaml
+!config/**/*.R
+
+!R/
+!R/**/*.R
+
+!scripts/
+!scripts/**/*.R
+
+!maestros/
+!maestros/**/*.md
+
+# ============================================================
+# 8) Documentacion y estructura base
+# ============================================================
+!.gitignore
+!*.Rproj
+!README.qmd
+!README.md
+!LICENSE
+!tree_project.txt
+!arbol-estructura.R
+
+# ============================================================
+# 9) Tabulares genericos fuera de rutas permitidas
+# ============================================================
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.ods
+*.json
+*.parquet
+*.feather
+*.rds
+*.rda
+
+# Excepciones explicitas:
+!config/**/*.csv
+!config/**/*.yml
+!config/**/*.yaml
+!data/raw/inei_population/**
+!data/raw/external_benchmarks/**
+!README.md
+!README.qmd
+!maestros/**/*.md

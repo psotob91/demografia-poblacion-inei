@@ -1,0 +1,84 @@
+dataset_id: "inei_population_1995_2030"
+table_name: "population_result"
+primary_key: ["year_id", "age", "sex_id", "location_id"]
+
+required_columns:
+  year_id: "integer"
+  age: "integer"
+  sex_id: "integer"
+  location_id: "integer"
+  population: "integer"
+
+constraints:
+  year_id: {min: 1995, max: 2030, allow_na: false}
+  age: {min: 0, max: 110, allow_na: false}
+
+  sex_id:
+    allowed_values: [8507, 8532]
+    allow_na: false
+
+  location_id:
+    allowed_values: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]
+    allow_na: false
+
+  population: {min: 0, allow_na: false}
+
+policy:
+  allow_total_sex: false
+  allow_total_age: false
+  age_definition: "Edad simple 0-109; age=110 representa el grupo abierto 110+ en el output contractual."
+  year_definition: "Ano calendario (year_id)."
+  population_units: "persons"
+  location_definition: "UBIGEO departamento (00=Peru; 01-25=departamento). Para distritos (ubigeo 6 digitos), dept = substr(ubigeo,1,2)."
+  extrapolation:
+    enabled: true
+    ages_extended_to: 125
+    internal_age_max: 125
+    contract_terminal_age: 110
+    contract_terminal_age_open: true
+    contract_terminal_age_label: "110+"
+    internal_tail_type: "expected_counts"
+    internal_tail_cap_125_per_sex_per_year: 1.0
+    fit_age_min: 95
+    fit_age_max: 109
+    benchmark_source_priority: "1) benchmark local desacoplado derivado de tabla-mortalidad-peru all_years single_age para regiones 1-25 y anos 1995-2025; 2) benchmark nacional implicito agregado desde regiones oficiales para location_id=0 en 1995-2025; 3) fallback UN WPP 2019 Peru para 2026-2030."
+    benchmark_source_active: "Benchmark local desacoplado cerrado 80-109, agregacion implicita nacional para location_id=0 y fallback UN WPP 2019 Peru solo para 2026-2030."
+    method: "Usa la masa observada 80 y + por estrato. Para regiones 1-25 en 1995-2025 toma la forma cerrada 80-109 desde el benchmark local desacoplado derivado de tabla-mortalidad-peru all_years single_age; excluye explicitamente la fila abierta 110+ y genera 110-125 con Kannisto ajustado solo sobre edades cerradas 95-109. Para location_id=0 en 1995-2025 agrega las schedules regionales oficiales ya corregidas; para 2026-2030 usa fallback Peru/WPP con la misma extension Kannisto. Convierte la schedule 80-125 en pesos de supervivencia, reparte la masa observada 80 y +, integeriza 80-109 y 110+ con Hamilton y exporta 0-109 y age=110 como 110+."
+  crossrepo_qc:
+    optional_snapshot_key: "crossrepo_death_110plus_snapshot"
+    policy: "minimum_110plus_floor"
+    snapshot_semantics: "Snapshot agregado y no sensible producido por mortalidad-causa-especifica con muertes observadas age>=110 ya armonizadas a la misma geografia, sexo y convencion contractual 110+."
+    enabled_when_snapshot_exists: true
+    method: "Si existe un snapshot valido y has_death_110plus_observed=TRUE en un estrato donde la poblacion contractual 110+ habria quedado en 0, el contractual se eleva a 1 persona y se registra mass_adjustment_from_crossrepo_qc = +1. Esta salvaguarda no recalibra la cola interna 110:125 ni modifica edades 0:109."
+
+dictionary:
+  year_id:
+    label: "Ano calendario"
+    units: null
+    omop_domain_id: "observation"
+    is_omop_concept_id: false
+
+  age:
+    label: "Edad 0-109 simple; 110 = 110+"
+    units: "years"
+    omop_domain_id: "observation"
+    is_omop_concept_id: false
+
+  sex_id:
+    label: "Sexo (concept id)"
+    units: null
+    allowed_values_label: "8507=Male; 8532=Female"
+    omop_domain_id: "person"
+    is_omop_concept_id: true
+
+  location_id:
+    label: "Ubicacion (UBIGEO departamento: 00=Peru; 01-25=departamento)"
+    units: null
+    omop_domain_id: "observation"
+    is_omop_concept_id: false
+
+  population:
+    label: "Poblacion (conteo de personas)"
+    units: "persons"
+    omop_domain_id: "measurement"
+    is_omop_concept_id: false

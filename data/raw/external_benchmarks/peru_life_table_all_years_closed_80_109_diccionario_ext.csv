@@ -1,0 +1,18 @@
+dataset_id,version,run_id,table_name,column_name,label,description,data_type,units,allow_na,is_key,n_missing,pct_missing,observed_min,observed_max,example_values
+inei_population_1995_2030,v1.0.0,refresh_external_benchmarks_20260416_003947,peru_life_table_all_years_closed_80_109,year_id,Ano calendario,Ano calendario del benchmark oficial regional.,integer,,FALSE,TRUE,0,0,1995,2025,1995|1996|1997|1998|1999
+inei_population_1995_2030,v1.0.0,refresh_external_benchmarks_20260416_003947,peru_life_table_all_years_closed_80_109,location_id,Departamento,Identificador departamental 1:25 del benchmark oficial regional.,integer,,FALSE,TRUE,0,0,1,25,1|2|3|4|5
+inei_population_1995_2030,v1.0.0,refresh_external_benchmarks_20260416_003947,peru_life_table_all_years_closed_80_109,sex_id,Sexo,Sexo OMOP-like del benchmark oficial regional.,integer,,FALSE,TRUE,0,0,8507,8532,8507|8532
+inei_population_1995_2030,v1.0.0,refresh_external_benchmarks_20260416_003947,peru_life_table_all_years_closed_80_109,age,Edad cerrada,Edad cerrada usada como benchmark de cola alta.,integer,years,FALSE,TRUE,0,0,80,109,80|81|82|83|84
+inei_population_1995_2030,v1.0.0,refresh_external_benchmarks_20260416_003947,peru_life_table_all_years_closed_80_109,mx,mx benchmark,Tasa central de mortalidad tomada del benchmark oficial regional.,numeric,,FALSE,FALSE,0,0,0.0364939209438395,1.03550082523506,0.115502379443501|0.127998642556738|0.141542111868531|0.156211528252961|0.172095225755734
+inei_population_1995_2030,v1.0.0,refresh_external_benchmarks_20260416_003947,peru_life_table_all_years_closed_80_109,qx,qx benchmark,Probabilidad anual de morir tomada del benchmark oficial regional.,numeric,,FALSE,FALSE,0,0,0.0358360449146604,0.644951480868221,0.109081547655565|0.120145426503505|0.131981379070843|0.144621765430518|0.158101001117188
+inei_population_1995_2030,v1.0.0,refresh_external_benchmarks_20260416_003947,peru_life_table_all_years_closed_80_109,lx,lx benchmark,Sobrevivientes de la tabla de vida oficial regional.,numeric,survivors,FALSE,FALSE,0,0,0.0471731321626536,69785.9048039649,29786.1512571235|26537.0317792937|23348.7287780334|20267.1313543575|17336.0630376781
+inei_population_1995_2030,v1.0.0,refresh_external_benchmarks_20260416_003947,peru_life_table_all_years_closed_80_109,Lx,Lx benchmark,Exposicion/sobrevivientes promedio de la tabla de vida oficial regional.,numeric,person-years,FALSE,FALSE,0,0,0.0294808148691397,68527.874075621,28130.3250503089|24908.8813566676|21771.5942131639|18763.4571498012|15926.3507145623
+inei_population_1995_2030,v1.0.0,refresh_external_benchmarks_20260416_003947,peru_life_table_all_years_closed_80_109,age_interval_open,Intervalo abierto,Indicador de intervalo abierto; en este benchmark debe ser siempre FALSE.,logical,,FALSE,FALSE,0,0,,,FALSE
+inei_population_1995_2030,v1.0.0,refresh_external_benchmarks_20260416_003947,peru_life_table_all_years_closed_80_109,life_table_label,Etiqueta de tabla de vida,Etiqueta de la tabla de vida de origen.,character,,FALSE,FALSE,0,0,,,"TABLAS ABREVIADAS DE MORTALIDAD
+1995-2000|TABLAS ABREVIADAS DE MORTALIDAD
+2000-2005|TABLAS ABREVIADAS DE MORTALIDAD
+2005-2010|TABLAS ABREVIADAS DE MORTALIDAD
+2010-2015|TABLAS ABREVIADAS DE MORTALIDAD
+2015-2020"
+inei_population_1995_2030,v1.0.0,refresh_external_benchmarks_20260416_003947,peru_life_table_all_years_closed_80_109,source_year_left,Ano fuente izquierdo,Ano izquierdo del bloque fuente usado upstream.,integer,,FALSE,FALSE,0,0,1995,2025,1995|2000|2005|2010|2015
+inei_population_1995_2030,v1.0.0,refresh_external_benchmarks_20260416_003947,peru_life_table_all_years_closed_80_109,source_year_right,Ano fuente derecho,Ano derecho del bloque fuente usado upstream.,integer,,FALSE,FALSE,0,0,1995,2025,1995|2000|2005|2010|2015

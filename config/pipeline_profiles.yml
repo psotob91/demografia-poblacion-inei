@@ -1,0 +1,13 @@
+profiles:
+  full:
+    description: "Pipeline completo: core + QC + reportes"
+    include_columns:
+      - profile_full
+  core:
+    description: "Solo pasos bloqueantes para construir y validar el contractual"
+    include_columns:
+      - profile_core
+  reports:
+    description: "Solo salidas editoriales y portal"
+    include_columns:
+      - profile_reports

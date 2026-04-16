@@ -1,0 +1,164 @@
+MAESTRO EDITORIAL — ANEXO METODOLÓGICO (CARGA DE ENFERMEDAD, PERÚ)
+
+INSTRUCCIÓN OBLIGATORIA DEL PROYECTO:
+En toda solicitud de redacción, reescritura o edición, se DEBE seguir estrictamente este maestro editorial.
+Si una respuesta no cumple estas reglas, debe ser corregida antes de ser aceptada.
+El asistente debe verificar explícitamente el cumplimiento de estas reglas en cada iteración.
+
+--------------------------------------------------
+I. PRINCIPIO CENTRAL
+
+Todo párrafo debe permitir responder:
+- qué dato se usó
+- quién lo produjo
+- qué hicimos con él
+- por qué fue necesario
+
+--------------------------------------------------
+II. REGLAS ESTRUCTURALES
+
+1. Separación de capas metodológicas (OBLIGATORIO)
+
+Distinguir siempre:
+(1) Metodología fuente (INEI)
+(2) Adaptación analítica (nosotros)
+(3) Modelamiento adicional (si aplica)
+
+Nunca mezclar en una misma oración.
+
+--------------------------------------------------
+2. Estructura de párrafo (formato ABDS)
+
+Cada párrafo:
+- Oración 1: qué se hizo
+- Oración 2: con qué datos
+- Oración 3: cómo se hizo
+- Oración 4: ajuste (opcional)
+
+--------------------------------------------------
+3. Orden lógico
+
+Siempre:
+Definición → Fuente → Procedimiento → Ajuste
+
+--------------------------------------------------
+III. REGLAS DE REDACCIÓN
+
+4. Economía del lenguaje
+
+Eliminar:
+- “es importante señalar”
+- “cabe mencionar”
+- “con el fin de”
+
+Usar redacción directa.
+
+--------------------------------------------------
+5. Longitud de oración
+
+Máximo 25 palabras.
+Si hay más de 2 comas → dividir.
+
+--------------------------------------------------
+6. Precisión terminológica
+
+No usar como sinónimos:
+- estimación
+- proyección
+- interpolación
+- ajuste
+
+--------------------------------------------------
+7. Definición única
+
+Cada concepto se define una sola vez.
+
+--------------------------------------------------
+IV. USO DE PRIMERA PERSONA
+
+8. Uso de “nosotros”
+
+Solo para:
+- transformaciones
+- decisiones
+- ajustes
+
+No usar para INEI ni definiciones.
+
+--------------------------------------------------
+V. LENGUAJE TÉCNICO
+
+9. Prohibido lenguaje informático
+
+Eliminar:
+- procesar
+- pipeline
+- script
+
+Usar:
+- estimar
+- calcular
+- ajustar
+
+--------------------------------------------------
+10. Explicación de términos
+
+Todo término técnico no epidemiológico:
+explicar en una línea.
+
+--------------------------------------------------
+VI. DECISIONES METODOLÓGICAS
+
+11. Explicitar decisiones
+
+Toda transformación debe indicar:
+- qué se hizo
+- por qué
+
+--------------------------------------------------
+12. Justificación breve
+
+Máximo 1 oración.
+
+--------------------------------------------------
+VII. COHERENCIA
+
+13. No redundancia
+
+No repetir definiciones ni fuentes.
+
+--------------------------------------------------
+14. Continuidad
+
+Cada párrafo debe conectarse sin repetir.
+
+--------------------------------------------------
+VIII. PLANTILLA BASE
+
+Fuente:
+El INEI estimó…
+
+Adaptación:
+Reorganizamos…
+
+Procedimiento:
+Calculamos…
+
+Ajuste:
+Ajustamos…
+
+--------------------------------------------------
+IX. CHECKLIST FINAL
+
+- ¿Se distingue INEI vs nosotros vs modelamiento?
+- ¿Hay lenguaje informático?
+- ¿Hay más de una idea por párrafo?
+- ¿Hay redundancia?
+- ¿Oraciones largas?
+- ¿Orden lógico correcto?
+
+--------------------------------------------------
+PRINCIPIO FINAL
+
+Un buen método no explica todo lo que se hizo,
+sino lo necesario para reproducirlo conceptualmente.

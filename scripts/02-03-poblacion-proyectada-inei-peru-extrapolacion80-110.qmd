@@ -1,0 +1,180 @@
+---
+title: "Proyección INEI proyectada observada vs. predicha"
+format: 
+  html:
+    embed-resources: true
+    theme: journal
+execute: 
+  warning: false
+editor: source
+---
+
+
+```{r}
+library(tidyverse)
+library(rio)
+library(here)
+library(data.table)
+
+df0 <- import(here("datos", "limpios", "poblacion-proyectada-inei", "inei_poblacion_long_omop_extended.rds")) 
+
+df <- df0 |> 
+  filter(age_type == "age") 
+```
+
+::: {.panel-tabset}
+
+## 2025
+
+```{r}
+#| fig-width: 12
+#| fig-height: 12
+df |> 
+  filter(gender_source_value != "T", year == 2025, location_id > 0, age >= 70) |> 
+  ggplot(aes(x = age, color = pred, shape = gender_source_value)) + 
+  geom_point(aes(y = population_obs), color = "blue") + 
+  geom_point(aes(y = population_pred), color = "red", alpha = 0.5) +
+  facet_wrap(. ~ location_name, scales = "free_y") + 
+  theme_classic()
+```
+
+## 2024
+
+```{r}
+#| fig-width: 12
+#| fig-height: 12
+df |> 
+  filter(gender_source_value != "T", year == 2024, location_id > 0, age >= 70) |> 
+  ggplot(aes(x = age, color = pred, shape = gender_source_value)) + 
+  geom_point(aes(y = population_obs), color = "blue") + 
+  geom_point(aes(y = population_pred), color = "red", alpha = 0.5) +
+  facet_wrap(. ~ location_name, scales = "free_y") + 
+  theme_classic()
+```
+
+## 2023
+
+```{r}
+#| fig-width: 12
+#| fig-height: 12
+df |> 
+  filter(gender_source_value != "T", year == 2023, location_id > 0, age >= 70) |> 
+  ggplot(aes(x = age, color = pred, shape = gender_source_value)) + 
+  geom_point(aes(y = population_obs), color = "blue") + 
+  geom_point(aes(y = population_pred), color = "red", alpha = 0.5) +
+  facet_wrap(. ~ location_name, scales = "free_y") + 
+  theme_classic()
+```
+
+## 2022
+
+```{r}
+#| fig-width: 12
+#| fig-height: 12
+df |> 
+  filter(gender_source_value != "T", year == 2022, location_id > 0, age >= 70) |> 
+  ggplot(aes(x = age, color = pred, shape = gender_source_value)) + 
+  geom_point(aes(y = population_obs), color = "blue") + 
+  geom_point(aes(y = population_pred), color = "red", alpha = 0.5) +
+  facet_wrap(. ~ location_name, scales = "free_y") + 
+  theme_classic()
+```
+
+## 2021
+
+```{r}
+#| fig-width: 12
+#| fig-height: 12
+df |> 
+  filter(gender_source_value != "T", year == 2021, location_id > 0, age >= 70) |> 
+  ggplot(aes(x = age, color = pred, shape = gender_source_value)) + 
+  geom_point(aes(y = population_obs), color = "blue") + 
+  geom_point(aes(y = population_pred), color = "red", alpha = 0.5) +
+  facet_wrap(. ~ location_name, scales = "free_y") + 
+  theme_classic()
+```
+
+## 2020
+
+```{r}
+#| fig-width: 12
+#| fig-height: 12
+df |> 
+  filter(gender_source_value != "T", year == 2020, location_id > 0, age >= 70) |> 
+  ggplot(aes(x = age, color = pred, shape = gender_source_value)) + 
+  geom_point(aes(y = population_obs), color = "blue") + 
+  geom_point(aes(y = population_pred), color = "red", alpha = 0.5) +
+  facet_wrap(. ~ location_name, scales = "free_y") + 
+  theme_classic()
+```
+
+## 2019
+
+```{r}
+#| fig-width: 12
+#| fig-height: 12
+df |> 
+  filter(gender_source_value != "T", year == 2019, location_id > 0, age >= 70) |> 
+  ggplot(aes(x = age, color = pred, shape = gender_source_value)) + 
+  geom_point(aes(y = population_obs), color = "blue") + 
+  geom_point(aes(y = population_pred), color = "red", alpha = 0.5) +
+  facet_wrap(. ~ location_name, scales = "free_y") + 
+  theme_classic()
+```
+
+## 2018
+
+```{r}
+#| fig-width: 12
+#| fig-height: 12
+df |> 
+  filter(gender_source_value != "T", year == 2018, location_id > 0, age >= 70) |> 
+  ggplot(aes(x = age, color = pred, shape = gender_source_value)) + 
+  geom_point(aes(y = population_obs), color = "blue") + 
+  geom_point(aes(y = population_pred), color = "red", alpha = 0.5) +
+  facet_wrap(. ~ location_name, scales = "free_y") + 
+  theme_classic()
+```
+
+:::
+
+## Discrepancias
+
+```{r}
+setDT(df0)
+
+## 1. Suma observada 80+ por estrato
+obs_80plus <- df0[
+  is.na(age) & age_group_start == 80,
+  .(obs_80plus = sum(population_obs, na.rm = TRUE)),
+  by = .(location_id, location_name, gender, year)
+]
+
+## 2. Suma predicha 80–110
+pred_80plus <- df0[
+  !is.na(age) & age >= 80,
+  .(pred_80plus = sum(population_pred, na.rm = TRUE)),
+  by = .(location_id, location_name, gender, year)
+]
+
+## 3. Combinar
+discrepancias <- merge(
+  obs_80plus,
+  pred_80plus,
+  by = c("location_id", "location_name", "gender", "year"),
+  all = TRUE
+)
+
+## 4. Calcular diferencias
+discrepancias[, diff_abs := pred_80plus - obs_80plus ]
+discrepancias[, diff_rel := (pred_80plus - obs_80plus) / obs_80plus * 100 ]
+
+## 5. Ordenar
+discrepancias <- discrepancias[order(location_id, gender, year)]
+
+discrepancias
+```
+
+
+
+
